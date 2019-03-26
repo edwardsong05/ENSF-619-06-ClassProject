@@ -10,3 +10,7 @@ def index(request):
 
 def nhl_players(request):
     return HttpResponse("Hello, world. You're at the nhl players.")
+
+
+def nhl_teams(request):
+    return HttpResponse("Hello, world. You're at the nhl teams.")
