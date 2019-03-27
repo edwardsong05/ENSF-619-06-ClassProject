@@ -13,7 +13,7 @@ class Command(BaseCommand):
         host_name = 'localhost'
         port_num = 3306
         user_name = 'root'
-        psw = 'Paprika!1'
+        psw = 'Password'
         db_name = 'fantasydb'
 
         baseURL = "https://statsapi.web.nhl.com"
@@ -162,7 +162,7 @@ class Command(BaseCommand):
         try:
             connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
             for i in range(dfGoalies.shape[0]):
-                #print(dfGoalies.loc[i, 'name', 'teamName'])
+                print(dfGoalies.loc[i, 'name'])
                 sql = \
                 """INSERT INTO `nhl_players` (`id`, `jersey_number`, `team_name`, `name`, \
                     `games_played`) VALUES (%s, %s, %s, %s, %s) \
@@ -181,22 +181,20 @@ class Command(BaseCommand):
                 connection.commit()
 
                 sql = \
-                """INSERT INTO `nhl_goalies` (`id`, `jersey_number`, `team_name`, `wins`, \
-                    `overtime_losses`, `shots_against`, `saves`, `shutouts`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+                """INSERT INTO `nhl_goalies` (`id`, `wins`, `losses`, `overtime_losses`, `shots_against`, `saves`, \
+                    `shutouts`) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                     ON DUPLICATE KEY UPDATE \
                     id = VALUES(id), \
-                    jersey_number=VALUES(jersey_number), \
-                    team_name=VALUES(team_name), \
                     wins=VALUES(wins), \
+                    losses=VALUES(losses), \
                     overtime_losses=VALUES(overtime_losses), \
                     shots_against=VALUES(shots_against), \
                     saves=VALUES(saves), \
                     shutouts=VALUES(shutouts)"""
                 with connection.cursor() as cursor:
                     cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
-                                        str(dfGoalies.loc[i, 'jerseyNumber']),
-                                        dfGoalies.loc[i, 'teamName'],
                                         str(dfGoalies.loc[i, 'losses']), # need wins
+                                        str(dfGoalies.loc[i, 'losses']),
                                         str(dfGoalies.loc[i, 'ot']),
                                         str(dfGoalies.loc[i, 'shotsAgainst']),
                                         str(dfGoalies.loc[i, 'saves']),
