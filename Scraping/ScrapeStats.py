@@ -7,6 +7,7 @@ import pymysql
 #%%
 baseURL = "https://statsapi.web.nhl.com"
 teamsURL = "https://statsapi.web.nhl.com/api/v1/teams"
+
 r = requests.get(teamsURL)
 teamsData = r.json()
 
@@ -31,7 +32,13 @@ for team in teamsData['teams']:
     teamStats['teamName'] = team['name']
     tempDf = pd.DataFrame.from_records([teamStats])
     dfTeams = dfTeams.append(tempDf, ignore_index=True)
+    rosterURL = teamURL + '/roster'
 
+#%%
+rosterURL = baseURL + teamURL + '/roster'
+r = requests.get(rosterURL)
+print(team['name'], r.status_code)
+teamData = r.json()
 #%%
 ##get player ids and names and position
 listGoalies = []
@@ -46,12 +53,18 @@ for team in teamsData['teams']:
     teamData = r.json()
     for player in teamData['teams'][0]['roster']['roster']:
         if player['position']['name'] == 'Goalie':
-            listGoalies.append((player['person']['id'], 
-                                player['person']['fullName']), team['name'])
+            if 'jerseyNumber' in player.keys():    
+                listGoalies.append((player['person']['id'], 
+                                    player['person']['fullName'], 
+                                    team['name'],
+                                    player['jerseyNumber']))
         else:
-            listSkaters.append((player['person']['id'], 
-                                player['person']['fullName'], team['name'],
-                                player['position']['name']))
+            if 'jerseyNumber' in player.keys():    
+                listSkaters.append((player['person']['id'], 
+                                    player['person']['fullName'], 
+                                    team['name'],
+                                    player['jerseyNumber'],
+                                    player['position']['name']))
 
 #%%
 ##build dataframes for skaters and goalies
@@ -77,6 +90,7 @@ for player in listGoalies:
     playerStats['id'] = playerId
     playerStats['name'] = player[1]
     playerStats['teamName'] = player[2]
+    playerStats['jerseyNumber'] = player[3]
     tempDf = pd.DataFrame.from_records([playerStats])
     dfGoalies = dfGoalies.append(tempDf, ignore_index=True)
     
@@ -105,9 +119,10 @@ for player in listSkaters:
     playerStats['id'] = playerId
     playerStats['name'] = player[1]
     playerStats['teamName'] = player[2]
-    playerStats['position'] = player[3]
+    playerStats['jerseyNumber'] = player[3]
+    playerStats['position'] = player[4]
     tempDf = pd.DataFrame.from_records([playerStats])
-    dfSkaters = dfSkaters.append(tempDf, ignore_index=True)    
+    dfSkaters = dfSkaters.append(tempDf, ignore_index=True)
 #%%
 ##Insert team data into the database
 try:
