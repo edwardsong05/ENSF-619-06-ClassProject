@@ -15,7 +15,6 @@ class NhlTeam(models.Model):
 
 
 class NhlPlayers(models.Model):
-    #id = models.IntegerField(db_column='ID', primary_key=True)
     jersey_number = models.IntegerField(db_column='Jersey_Number', null=False)
     team_name = models.ForeignKey('NhlTeam', models.CASCADE, db_column='Team_Name', null=False)
     name = models.CharField(db_column='Name', max_length=45, null=False)
@@ -27,14 +26,13 @@ class NhlPlayers(models.Model):
 
 
 class NhlSkaters(models.Model):
-    jersey_number = models.ForeignKey(NhlPlayers, models.CASCADE, related_name='NhlSkaters_Jersey_Number', db_column='Jersey_Number', primary_key=True)
-    team_name = models.ForeignKey(NhlPlayers, models.CASCADE, related_name='NhlSkaters_Team_Name', db_column='Team_Name', null=False)
+    id = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NHLSkaters_ID', db_column='id', primary_key=True)
     goals = models.IntegerField(db_column='Goals', null=False, default=0)
     powerplay_goals = models.IntegerField(db_column='Powerplay_Goals', null=False, default=0)
     powerplay_points = models.IntegerField(db_column='Powerplay_Points', null=False, default=0)
     shorthanded_goals = models.IntegerField(db_column='Shorthanded_Goals', null=False, default=0)
     shorthanded_points = models.IntegerField(db_column='Shorthanded_Points', null=False, default=0)
-    plus_minus = models.IntegerField(db_column='+/-', null=False, default=0)  # Field renamed to remove unsuitable characters.
+    plus_minus = models.IntegerField(db_column='Plus_Minus', null=False, default=0)  # Field renamed to remove unsuitable characters.
     penalty_minutes = models.IntegerField(db_column='Penalty_Minutes', null=False, default=0)
     game_winning_goals = models.IntegerField(db_column='Game_Winning_Goals', null=False, default=0)
     shots_on_goal = models.IntegerField(db_column='Shots_on_Goal', null=False, default=0)
@@ -45,13 +43,10 @@ class NhlSkaters(models.Model):
 
     class Meta:
         db_table = 'nhl_skaters'
-        unique_together = (('jersey_number', 'team_name'),)
 
 
 class NhlGoalies(models.Model):
     id = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NHLGoalies_ID', db_column='id', primary_key=True)
-    #jersey_number = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NhlGoalies_Jersey_Number', db_column='Jersey_Number', null=False)
-    #team_name = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NhlGoalies_Team_Name', db_column='Team_Name', null=False)
     wins = models.IntegerField(db_column='Wins', null=False, default=0)
     losses = models.IntegerField(db_column='Losses', null=False, default=0)
     overtime_losses = models.IntegerField(db_column='Overtime_Losses', null=False, default=0)
@@ -61,7 +56,6 @@ class NhlGoalies(models.Model):
 
     class Meta:
         db_table = 'nhl_goalies'
-        #unique_together = (('jersey_number', 'team_name'),)
 
 
 class Owner(models.Model):

@@ -151,7 +151,7 @@ class Command(BaseCommand):
                                         str(dfTeams.loc[i,'losses']),
                                         str(dfTeams.loc[i,'ot'])))
                 connection.commit()
-                print ("Record inserted successfully into python_users table")
+                print ("Record inserted successfully into nhl_team table")
         except pymysql.Error as error:
             code, message = error.args
             print(">>>>>>>>>>>>>", code, message)
@@ -193,16 +193,103 @@ class Command(BaseCommand):
                     shutouts=VALUES(shutouts)"""
                 with connection.cursor() as cursor:
                     cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
-                                        str(dfGoalies.loc[i, 'losses']), # need wins
+                                        str(dfGoalies.loc[i, 'wins']),
                                         str(dfGoalies.loc[i, 'losses']),
                                         str(dfGoalies.loc[i, 'ot']),
                                         str(dfGoalies.loc[i, 'shotsAgainst']),
                                         str(dfGoalies.loc[i, 'saves']),
                                         str(dfGoalies.loc[i, 'shutouts'])))
                 connection.commit()
-                print ("Record inserted successfully into python_users table")
+                print ("Record inserted successfully into nhl_goalies table")
         except pymysql.Error as error:
             code, message = error.args
             print(">>>>>>>>>>>>>", code, message)
         finally:
             connection.close()
+
+        # insert skater data into the database
+        try:
+            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
+            for i in range(dfSkaters.shape[0]):
+                print(dfSkaters.loc[i, 'name'])
+                sql = \
+                """INSERT INTO `nhl_players` (`id`, `jersey_number`, `team_name`, `name`, \
+                    `games_played`) VALUES (%s, %s, %s, %s, %s) \
+                    ON DUPLICATE KEY UPDATE \
+                    id = VALUES(id), \
+                    jersey_number=VALUES(jersey_number), \
+                    team_name=VALUES(team_name), \
+                    name=VALUES(name), \
+                    games_played=VALUES(games_played)"""
+                with connection.cursor() as cursor:
+                    cursor.execute(sql, (str(dfSkaters.loc[i, 'id']),
+                                        str(dfSkaters.loc[i, 'jerseyNumber']),
+                                        dfSkaters.loc[i, 'teamName'],
+                                        dfSkaters.loc[i, 'name'],
+                                        str(dfSkaters.loc[i, 'games'])))
+                connection.commit()
+
+                sql = \
+                """INSERT INTO `nhl_skaters` (`id`, `goals`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
+                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`, `shots_on_goal`, \
+                    `center_flag`, `left_wing_flag`, `right_wing_flag`, `defencemen_flag`) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                    ON DUPLICATE KEY UPDATE \
+                    id = VALUES(id), \
+                    goals=VALUES(goals), \
+                    powerplay_goals=VALUES(powerplay_goals), \
+                    powerplay_points=VALUES(powerplay_points), \
+                    shorthanded_goals=VALUES(shorthanded_goals), \
+                    shorthanded_points=VALUES(shorthanded_points), \
+                    plus_minus=VALUES(plus_minus), \
+                    penalty_minutes=VALUES(penalty_minutes), \
+                    game_winning_goals=VALUES(game_winning_goals), \
+                    shots_on_goal=VALUES(shots_on_goal), \
+                    center_flag=VALUES(center_flag), \
+                    left_wing_flag=VALUES(left_wing_flag), \
+                    right_wing_flag=VALUES(right_wing_flag), \
+                    defencemen_flag=VALUES(defencemen_flag)"""
+                with connection.cursor() as cursor:
+                    if 'Center' in dfSkaters.loc[i, 'position']:
+                        center = 1
+                        defence = 0
+                        left = 0
+                        right = 0
+                    elif 'Defense' in dfSkaters.loc[i, 'position']:
+                        center = 0
+                        defence = 1
+                        left = 0
+                        right = 0
+                    elif 'Left' in dfSkaters.loc[i, 'position']:
+                        center = 0
+                        defence = 0
+                        left = 1
+                        right = 0
+                    else:
+                        center = 0
+                        defence = 0
+                        left = 0
+                        right = 1
+                    cursor.execute(sql, (str(dfSkaters.loc[i, 'id']),
+                                        str(dfSkaters.loc[i, 'goals']),
+                                        str(dfSkaters.loc[i, 'powerPlayGoals']),
+                                        str(dfSkaters.loc[i, 'powerPlayPoints']),
+                                        str(dfSkaters.loc[i, 'shortHandedGoals']),
+                                        str(dfSkaters.loc[i, 'shortHandedPoints']),
+                                        str(dfSkaters.loc[i, 'plusMinus']),
+                                        str(dfSkaters.loc[i, 'penaltyMinutes']),
+                                        str(dfSkaters.loc[i, 'gameWinningGoals']),
+                                        str(dfSkaters.loc[i, 'shots']),
+                                        str(center),
+                                        str(defence),
+                                        str(left),
+                                        str(right)))
+                connection.commit()
+                print ("Record inserted successfully into nhl_skaters table")
+        except pymysql.Error as error:
+            code, message = error.args
+            print(">>>>>>>>>>>>>", code, message)
+        finally:
+            connection.close()
+
+# Center, Defensemen, Left Wing, Right Wing
