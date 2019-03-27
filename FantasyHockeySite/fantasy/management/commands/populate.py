@@ -9,8 +9,16 @@ class Command(BaseCommand):
     help = 'Updates models in the NHL Team table'
 
     def handle(self, *args, ** options):
+        # database connection params
+        host_name = 'localhost'
+        port_num = 3306
+        user_name = 'root'
+        psw = 'Paprika!1'
+        db_name = 'fantasydb'
+
         baseURL = "https://statsapi.web.nhl.com"
         teamsURL = "https://statsapi.web.nhl.com/api/v1/teams"
+
         r = requests.get(teamsURL)
         teamsData = r.json()
 
@@ -111,7 +119,7 @@ class Command(BaseCommand):
 
         # insert team data into the database
         try:
-            connection = pymysql.connect(host='localhost', port=3306, user='root', passwd='Paprika!1', db='fantasydb')
+            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
             for i in range(dfTeams.shape[0]):
                 print(dfTeams.loc[i,'teamName'])
                 sql = \
@@ -136,7 +144,33 @@ class Command(BaseCommand):
                 connection.commit()
                 print ("Record inserted successfully into python_users table")
         except pymysql.Error as error:
-                code, message = error.args
-                print(">>>>>>>>>>>>>", code, message)
+            code, message = error.args
+            print(">>>>>>>>>>>>>", code, message)
+        finally:
+            connection.close()
+
+        # insert goalie data into the database
+        try:
+            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
+            for i in range(dfGoalies.shape[0]):
+                #print(dfGoalies.loc[i, 'name', 'teamName'])
+                sql = \
+                """INSERT INTO `nhl_players` (`jersey_number`, `team_name`, `name`, \
+                    `games_played`) VALUES (%s, %s, %s, %s) \
+                    ON DUPLICATE KEY UPDATE \
+                    jersey_number=VALUES(jersey_number), \
+                    team_name=VALUES(team_name), \
+                    name=VALUES(name), \
+                    games_played=VALUES(games_played)"""
+                with connection.cursor() as cursor:
+                    cursor.execute(sql, (i, #dfGoalies.loc[i, 'jersey_number'],
+                                        dfGoalies.loc[i, 'teamName'],
+                                        dfGoalies.loc[i, 'name'],
+                                        dfGoalies.loc[i, 'games']))
+                connection.commit()
+                print ("Record inserted successfully into python_users table")
+        except pymysql.Error as error:
+            code, message = error.args
+            print(">>>>>>>>>>>>>", code, message)
         finally:
             connection.close()
