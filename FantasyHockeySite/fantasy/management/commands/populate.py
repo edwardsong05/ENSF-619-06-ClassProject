@@ -177,7 +177,30 @@ class Command(BaseCommand):
                                         str(dfGoalies.loc[i, 'jerseyNumber']),
                                         dfGoalies.loc[i, 'teamName'],
                                         dfGoalies.loc[i, 'name'],
-                                        dfGoalies.loc[i, 'games']))
+                                        str(dfGoalies.loc[i, 'games'])))
+                connection.commit()
+
+                sql = \
+                """INSERT INTO `nhl_goalies` (`id`, `jersey_number`, `team_name`, `wins`, \
+                    `overtime_losses`, `shots_against`, `saves`, `shutouts`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+                    ON DUPLICATE KEY UPDATE \
+                    id = VALUES(id), \
+                    jersey_number=VALUES(jersey_number), \
+                    team_name=VALUES(team_name), \
+                    wins=VALUES(wins), \
+                    overtime_losses=VALUES(overtime_losses), \
+                    shots_against=VALUES(shots_against), \
+                    saves=VALUES(saves), \
+                    shutouts=VALUES(shutouts)"""
+                with connection.cursor() as cursor:
+                    cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
+                                        str(dfGoalies.loc[i, 'jerseyNumber']),
+                                        dfGoalies.loc[i, 'teamName'],
+                                        str(dfGoalies.loc[i, 'losses']), # need wins
+                                        str(dfGoalies.loc[i, 'ot']),
+                                        str(dfGoalies.loc[i, 'shotsAgainst']),
+                                        str(dfGoalies.loc[i, 'saves']),
+                                        str(dfGoalies.loc[i, 'shutouts'])))
                 connection.commit()
                 print ("Record inserted successfully into python_users table")
         except pymysql.Error as error:

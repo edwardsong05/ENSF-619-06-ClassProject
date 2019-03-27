@@ -15,7 +15,7 @@ class NhlTeam(models.Model):
 
 
 class NhlPlayers(models.Model):
-    id = models.IntegerField(db_column='ID', primary_key=True)
+    #id = models.IntegerField(db_column='ID', primary_key=True)
     jersey_number = models.IntegerField(db_column='Jersey_Number', null=False)
     team_name = models.ForeignKey('NhlTeam', models.CASCADE, db_column='Team_Name', null=False)
     name = models.CharField(db_column='Name', max_length=45, null=False)
@@ -49,7 +49,7 @@ class NhlSkaters(models.Model):
 
 
 class NhlGoalies(models.Model):
-    jersey_number = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NhlGoalies_Jersey_Number', db_column='Jersey_Number', primary_key=True)
+    jersey_number = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NhlGoalies_Jersey_Number', db_column='Jersey_Number', null=False)
     team_name = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NhlGoalies_Team_Name', db_column='Team_Name', null=False)
     wins = models.IntegerField(db_column='Wins', null=False, default=0)
     losses = models.IntegerField(db_column='Losses', null=False, default=0)
