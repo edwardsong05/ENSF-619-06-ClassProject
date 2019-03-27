@@ -15,7 +15,8 @@ class NhlTeam(models.Model):
 
 
 class NhlPlayers(models.Model):
-    jersey_number = models.IntegerField(db_column='Jersey_Number', primary_key=True)
+    id = models.IntegerField(db_column='ID', primary_key=True)
+    jersey_number = models.IntegerField(db_column='Jersey_Number', null=False)
     team_name = models.ForeignKey('NhlTeam', models.CASCADE, db_column='Team_Name', null=False)
     name = models.CharField(db_column='Name', max_length=45, null=False)
     games_played = models.IntegerField(db_column='Games_Played', null=False, default=0)

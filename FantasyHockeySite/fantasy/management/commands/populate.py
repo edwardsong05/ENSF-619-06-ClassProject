@@ -47,7 +47,8 @@ class Command(BaseCommand):
         listGoalies = []
         listSkaters = []
 
-        # for each team:
+        #a = [teamsData['teams'][0]]
+        #for team in a:
         for team in teamsData['teams']:
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.roster")
@@ -55,14 +56,20 @@ class Command(BaseCommand):
             teamData = r.json()
             for player in teamData['teams'][0]['roster']['roster']:
                 if player['position']['name'] == 'Goalie':
-                    listGoalies.append((player['person']['id'],
-                                        player['person']['fullName'], team['name']))
+                    if 'jerseyNumber' in player.keys():
+                        listGoalies.append((player['person']['id'],
+                                            player['person']['fullName'],
+                                            team['name'],
+                                            player['jerseyNumber']))
                 else:
-                    listSkaters.append((player['person']['id'],
-                                        player['person']['fullName'], team['name'],
-                                        player['position']['name']))
+                    if 'jerseyNumber' in player.keys():
+                        listSkaters.append((player['person']['id'],
+                                            player['person']['fullName'],
+                                            team['name'],
+                                            player['jerseyNumber'],
+                                            player['position']['name']))
 
-        # build dataframes for skaters and goalies
+        ##build dataframes for skaters and goalies
         dfGoalies = pd.DataFrame(columns=['id','name', 'teamName', 'evenSaves',
                                         'evenShots','evenStrengthSavePercentage',
                                         'games','gamesStarted','goalAgainstAverage',
@@ -85,6 +92,7 @@ class Command(BaseCommand):
             playerStats['id'] = playerId
             playerStats['name'] = player[1]
             playerStats['teamName'] = player[2]
+            playerStats['jerseyNumber'] = player[3]
             tempDf = pd.DataFrame.from_records([playerStats])
             dfGoalies = dfGoalies.append(tempDf, ignore_index=True)
 
@@ -113,7 +121,8 @@ class Command(BaseCommand):
             playerStats['id'] = playerId
             playerStats['name'] = player[1]
             playerStats['teamName'] = player[2]
-            playerStats['position'] = player[3]
+            playerStats['jerseyNumber'] = player[3]
+            playerStats['position'] = player[4]
             tempDf = pd.DataFrame.from_records([playerStats])
             dfSkaters = dfSkaters.append(tempDf, ignore_index=True)
 
@@ -155,15 +164,17 @@ class Command(BaseCommand):
             for i in range(dfGoalies.shape[0]):
                 #print(dfGoalies.loc[i, 'name', 'teamName'])
                 sql = \
-                """INSERT INTO `nhl_players` (`jersey_number`, `team_name`, `name`, \
-                    `games_played`) VALUES (%s, %s, %s, %s) \
+                """INSERT INTO `nhl_players` (`id`, `jersey_number`, `team_name`, `name`, \
+                    `games_played`) VALUES (%s, %s, %s, %s, %s) \
                     ON DUPLICATE KEY UPDATE \
+                    id = VALUES(id), \
                     jersey_number=VALUES(jersey_number), \
                     team_name=VALUES(team_name), \
                     name=VALUES(name), \
                     games_played=VALUES(games_played)"""
                 with connection.cursor() as cursor:
-                    cursor.execute(sql, (i, #dfGoalies.loc[i, 'jersey_number'],
+                    cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
+                                        str(dfGoalies.loc[i, 'jerseyNumber']),
                                         dfGoalies.loc[i, 'teamName'],
                                         dfGoalies.loc[i, 'name'],
                                         dfGoalies.loc[i, 'games']))
