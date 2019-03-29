@@ -13,7 +13,7 @@ class Command(BaseCommand):
         host_name = 'localhost'
         port_num = 3306
         user_name = 'root'
-        psw = 'Password'
+        psw = 'Paprika!1'
         db_name = 'fantasydb'
 
         baseURL = "https://statsapi.web.nhl.com"
@@ -33,12 +33,12 @@ class Command(BaseCommand):
                                         'shotsAllowed','shotsPerGame','winLeadFirstPer',
                                         'winLeadSecondPer','winOppScoreFirst','winOutshootOpp',
                                         'winOutshotByOpp','winScoreFirst','wins'])
-        
+
         listGoalies = []
         listSkaters = []
-        #for team in teamsData['teams']:    
+        #for team in teamsData['teams']:
         for i in range(3):
-            team = teamsData['teams'][i]    
+            team = teamsData['teams'][i]
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.stats")
             print(team['name'], r.status_code)
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             tempDf = pd.DataFrame.from_records([teamStats])
             dfTeams = dfTeams.append(tempDf, ignore_index=True, sort = False)
 
-        
+
 
         #for team in teamsData['teams']:
             teamURL = team['link']
