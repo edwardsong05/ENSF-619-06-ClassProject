@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+from .models import NhlPlayers, NhlTeam
+
 
 # Create your views here.
 def index(request):
@@ -9,8 +11,22 @@ def index(request):
 
 
 def nhl_players(request):
-    return HttpResponse("Hello, world. You're at the nhl players.")
+    query_results = NhlPlayers.objects.all()
+    return render(request, 'fantasy/nhl_players.html', {'query_results': query_results})
 
 
 def nhl_teams(request):
-    return HttpResponse("Hello, world. You're at the nhl teams.")
+    query_results = NhlTeam.objects.all()
+    return render(request, 'fantasy/nhl_team.html', {'query_results': query_results})
+
+
+def search_nhl_player(request):
+    return render(request, 'fantasy/search_nhl_player.html')
+
+
+def search_player(request):
+    tn = request.GET.get('team_name').strip()
+    jn = request.GET.get('jersey_number').strip()
+    n = str(request.GET.get('name').strip())
+    query_results = NhlPlayers.objects.get(name=n)
+    return HttpResponse(n)
