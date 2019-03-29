@@ -33,7 +33,12 @@ class Command(BaseCommand):
                                         'shotsAllowed','shotsPerGame','winLeadFirstPer',
                                         'winLeadSecondPer','winOppScoreFirst','winOutshootOpp',
                                         'winOutshotByOpp','winScoreFirst','wins'])
-        for team in teamsData['teams']:
+        
+        listGoalies = []
+        listSkaters = []
+        #for team in teamsData['teams']:    
+        for i in range(3):
+            team = teamsData['teams'][i]    
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.stats")
             print(team['name'], r.status_code)
@@ -41,15 +46,11 @@ class Command(BaseCommand):
             teamStats = teamData['teams'][0]['teamStats'][0]['splits'][0]['stat']
             teamStats['teamName'] = team['name']
             tempDf = pd.DataFrame.from_records([teamStats])
-            dfTeams = dfTeams.append(tempDf, ignore_index=True)
+            dfTeams = dfTeams.append(tempDf, ignore_index=True, sort = False)
 
-        # get player ids and names and position
-        listGoalies = []
-        listSkaters = []
+        
 
-        #a = [teamsData['teams'][0]]
-        #for team in a:
-        for team in teamsData['teams']:
+        #for team in teamsData['teams']:
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.roster")
             print(team['name'], r.status_code)
@@ -94,7 +95,7 @@ class Command(BaseCommand):
             playerStats['teamName'] = player[2]
             playerStats['jerseyNumber'] = player[3]
             tempDf = pd.DataFrame.from_records([playerStats])
-            dfGoalies = dfGoalies.append(tempDf, ignore_index=True)
+            dfGoalies = dfGoalies.append(tempDf, ignore_index=True, sort = False)
 
         dfSkaters = pd.DataFrame(columns=['id','name','teamName',
                                         'position','blocked','evenTimeOnIce',
@@ -124,7 +125,7 @@ class Command(BaseCommand):
             playerStats['jerseyNumber'] = player[3]
             playerStats['position'] = player[4]
             tempDf = pd.DataFrame.from_records([playerStats])
-            dfSkaters = dfSkaters.append(tempDf, ignore_index=True)
+            dfSkaters = dfSkaters.append(tempDf, ignore_index=True, sort = False)
 
         # insert team data into the database
         try:
