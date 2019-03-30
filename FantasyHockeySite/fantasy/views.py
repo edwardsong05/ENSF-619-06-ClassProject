@@ -34,3 +34,13 @@ def search_player(request):
     skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
     goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
     return render(request, 'fantasy/search_player.html', {'query_results1': skaters, 'query_results2': goalies})
+
+
+def create_fantasy_league(request):
+    return render(request, 'fantasy/create_fantasy_league.html')
+
+
+def create_league(request):
+    n = request.GET.get('name').strip()
+    c = request.GET.get('code')
+    return HttpResponse("finished")
