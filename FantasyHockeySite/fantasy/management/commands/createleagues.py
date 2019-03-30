@@ -87,6 +87,7 @@ class Command(BaseCommand):
                 
                 #fill the remaining team members
                 for i in range(maxPlayers-minGoalies-minDef-minRight-minLeft-minCenter):
+                    #insert skaters to goalies at a 10:1 ratio
                     if random.randint(0,10) == 0:
                         self.insertGoalie(playerIds, goalies, league, team)
                     else:
@@ -169,10 +170,10 @@ class Command(BaseCommand):
                         shutouts_weight = self.genRandomNum(),
                         maximum_number_of_players = random.randrange(30,50),
                         minimum_number_of_goalies = random.randrange(1,5),
-                        minimum_number_of_defencemen = 2,
-                        minimum_number_of_right_wing = 1,
-                        minimum_number_of_left_wing = 1,
-                        minimum_number_of_center = 1,
+                        minimum_number_of_defencemen = random.randrange(1,2),
+                        minimum_number_of_right_wing = random.randrange(1,2),
+                        minimum_number_of_left_wing = random.randrange(1,2),
+                        minimum_number_of_center = random.randrange(1,2),
                         fantasy_league_invite_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)),
                         commissionerid = commissioner)
                 participate = Participates.objects.create(fantasy_league_name = league,

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from fantasy.models import NhlTeam
+from fake_useragent import UserAgent
 import requests
 import pandas as pd
 import pymysql
@@ -8,7 +8,21 @@ import pymysql
 class Command(BaseCommand):
     help = 'Updates models in the NHL Team table'
 
+    def getRequest(self, url):
+        #randomise user agent to prevent rate limit
+        while True:
+            try:
+                ua = UserAgent()
+                header = {'User-Agent':str(ua.random)}
+                r = requests.get(url, headers = header, timeout = 10)
+                break
+            except Exception as e:
+                #sometimes it will timeout and raise exception
+                print(str(e))
+        return r
+
     def handle(self, *args, ** options):
+        print("RUNNING")
         # database connection params
         host_name = 'localhost'
         port_num = 3306
@@ -18,8 +32,8 @@ class Command(BaseCommand):
 
         baseURL = "https://statsapi.web.nhl.com"
         teamsURL = "https://statsapi.web.nhl.com/api/v1/teams"
-
-        r = requests.get(teamsURL)
+        print(teamsURL)
+        r = self.getRequest(teamsURL)
         teamsData = r.json()
 
         # get team stats
@@ -36,17 +50,12 @@ class Command(BaseCommand):
 
         listGoalies = []
         listSkaters = []
-<<<<<<< HEAD
-        #for team in teamsData['teams']:
-        for i in range(3):
-            team = teamsData['teams'][i]
-=======
-        #for team in teamsData['teams']:    
-        for i in range(10):
-            team = teamsData['teams'][i]    
->>>>>>> master
+
+        #for i in range(10):
+            #team = teamsData['teams'][i]
+        for team in teamsData['teams']:
             teamURL = team['link']
-            r = requests.get(baseURL + teamURL + "?expand=team.stats")
+            r = self.getRequest(baseURL + teamURL + "?expand=team.stats")
             print(team['name'], r.status_code)
             teamData = r.json()
             teamStats = teamData['teams'][0]['teamStats'][0]['splits'][0]['stat']
@@ -56,9 +65,9 @@ class Command(BaseCommand):
 
 
 
-        
+
             teamURL = team['link']
-            r = requests.get(baseURL + teamURL + "?expand=team.roster")
+            r = self.getRequest(baseURL + teamURL + "?expand=team.roster")
             print(team['name'], r.status_code)
             teamData = r.json()
             for player in teamData['teams'][0]['roster']['roster']:
@@ -90,7 +99,7 @@ class Command(BaseCommand):
             print(player[1])
             playerId = player[0]
             playerURL = 'https://statsapi.web.nhl.com/api/v1/people/' + str(playerId) + '/stats?stats=statsSingleSeason&season=20172018'
-            r = requests.get(playerURL)
+            r = self.getRequest(playerURL)
             playerData = r.json()
             if playerData['stats'][0]['splits']==[]:
                 print("Empty")
@@ -119,7 +128,7 @@ class Command(BaseCommand):
             print(player[1])
             playerId = player[0]
             playerURL = 'https://statsapi.web.nhl.com/api/v1/people/' + str(playerId) + '/stats?stats=statsSingleSeason&season=20172018'
-            r = requests.get(playerURL)
+            r = self.getRequest(playerURL)
             playerData = r.json()
             if playerData['stats'][0]['splits']==[]:
                 print("Empty")
