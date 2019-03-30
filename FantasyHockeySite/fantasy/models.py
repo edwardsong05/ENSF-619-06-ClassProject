@@ -19,7 +19,7 @@ class NhlPlayers(models.Model):
     team_name = models.ForeignKey('NhlTeam', models.CASCADE, db_column='Team_Name', null=False)
     name = models.CharField(db_column='Name', max_length=45, null=False)
     games_played = models.IntegerField(db_column='Games_Played', null=False, default=0)
-    
+
     class Meta:
         db_table = 'nhl_players'
         unique_together = (('jersey_number', 'team_name'),)
@@ -58,10 +58,7 @@ class NhlGoalies(models.Model):
         db_table = 'nhl_goalies'
 
 class LeagueCommissioner(models.Model):
-<<<<<<< HEAD
     #username = models.ForeignKey('Owner', models.CASCADE, db_column='Username', primary_key=True)
-=======
->>>>>>> master
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', primary_key=True)
 
     class Meta:
@@ -112,11 +109,7 @@ class FantasyTeam(models.Model):
     fantasy_team_name = models.CharField(db_column='Fantasy_Team_Name', max_length=45)
     fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, db_column='Fantasy_League_Name', null=False)
     fantasy_points = models.IntegerField(db_column='Fantasy_Points', null=False, default=0)
-<<<<<<< HEAD
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='Username', null=False)
-=======
-    userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', null=False)
->>>>>>> master
 
     class Meta:
         db_table = 'fantasy_team'
