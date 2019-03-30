@@ -112,9 +112,6 @@ class FantasyTeam(models.Model):
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='Username', null=False)
 
     class Meta:
-        db_table = 'fantasy_team'
-        unique_together = (('fantasy_team_name', 'fantasy_league_name'),)
-
 
 class GoalieTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='GoalieTeams_ID', db_column='Player_ID')
