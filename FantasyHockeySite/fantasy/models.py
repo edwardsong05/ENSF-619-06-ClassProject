@@ -92,7 +92,7 @@ class FantasyLeague(models.Model):
     minimum_number_of_right_wing = models.IntegerField(db_column='Minimum_Number_of_Right_Wing', null=False, default=1)
     minimum_number_of_left_wing = models.IntegerField(db_column='Minimum_Number_of_Left_Wing', null=False, default=1)
     minimum_number_of_center = models.IntegerField(db_column='Minimum_Number_of_Center', null=False, default=1)
-    fantasy_league_invite_code = models.CharField(db_column='Fantasy_League_Invite_Code', max_length=45, null=False)
+    fantasy_league_invite_code = models.CharField(db_column='Fantasy_League_Invite_Code', max_length=45, null=False, unique=True)
     commissionerid = models.ForeignKey('LeagueCommissioner', models.CASCADE, db_column='Commissioner_ID')
 
     class Meta:
