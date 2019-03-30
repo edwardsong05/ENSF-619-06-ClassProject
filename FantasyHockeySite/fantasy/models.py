@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
 # Create your models here.
 class NhlTeam(models.Model):
     team_name = models.CharField(db_column='Team_Name', primary_key=True, max_length=45)
@@ -57,12 +58,14 @@ class NhlGoalies(models.Model):
     class Meta:
         db_table = 'nhl_goalies'
 
+
 class LeagueCommissioner(models.Model):
-    #username = models.ForeignKey('Owner', models.CASCADE, db_column='Username', primary_key=True)
+    # username = models.ForeignKey('Owner', models.CASCADE, db_column='Username', primary_key=True)
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', primary_key=True)
 
     class Meta:
         db_table = 'league_commissioner'
+
 
 class FantasyLeague(models.Model):
     fantasy_league_name = models.CharField(db_column='Fantasy_League_Name', primary_key=True, max_length=45)
@@ -112,6 +115,9 @@ class FantasyTeam(models.Model):
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='Username', null=False)
 
     class Meta:
+        db_table = 'fantasy_team'
+        unique_together = (('fantasy_team_name', 'fantasy_league_name'),)
+
 
 class GoalieTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='GoalieTeams_ID', db_column='Player_ID')
