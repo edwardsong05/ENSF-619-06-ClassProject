@@ -246,13 +246,14 @@ class Command(BaseCommand):
                 connection.commit()
 
                 sql = \
-                """INSERT INTO `nhl_skaters` (`id`, `goals`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
+                """INSERT INTO `nhl_skaters` (`id`, `goals`, `assists`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
                     `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`, `shots_on_goal`, \
                     `center_flag`, `left_wing_flag`, `right_wing_flag`, `defencemen_flag`) \
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                     ON DUPLICATE KEY UPDATE \
                     id = VALUES(id), \
                     goals=VALUES(goals), \
+                    assists=VALUES(assists), \
                     powerplay_goals=VALUES(powerplay_goals), \
                     powerplay_points=VALUES(powerplay_points), \
                     shorthanded_goals=VALUES(shorthanded_goals), \
@@ -260,7 +261,7 @@ class Command(BaseCommand):
                     plus_minus=VALUES(plus_minus), \
                     penalty_minutes=VALUES(penalty_minutes), \
                     game_winning_goals=VALUES(game_winning_goals), \
-                    shots_on_goal=VALUES(shots_on_goal), \
+                    shots_on_goal=VALUES(shots_on_goal), \                
                     center_flag=VALUES(center_flag), \
                     left_wing_flag=VALUES(left_wing_flag), \
                     right_wing_flag=VALUES(right_wing_flag), \
@@ -288,6 +289,7 @@ class Command(BaseCommand):
                         right = 1
                     cursor.execute(sql, (str(dfSkaters.loc[i, 'id']),
                                         str(dfSkaters.loc[i, 'goals']),
+                                        str(dfSkaters.loc[i, 'assists']),
                                         str(dfSkaters.loc[i, 'powerPlayGoals']),
                                         str(dfSkaters.loc[i, 'powerPlayPoints']),
                                         str(dfSkaters.loc[i, 'shortHandedGoals']),

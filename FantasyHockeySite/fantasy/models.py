@@ -28,6 +28,7 @@ class NhlPlayers(models.Model):
 class NhlSkaters(models.Model):
     id = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='NHLSkaters_ID', db_column='id', primary_key=True)
     goals = models.IntegerField(db_column='Goals', null=False, default=0)
+    assists = models.IntegerField(db_column='Assists', null=False, default=0)
     powerplay_goals = models.IntegerField(db_column='Powerplay_Goals', null=False, default=0)
     powerplay_points = models.IntegerField(db_column='Powerplay_Points', null=False, default=0)
     shorthanded_goals = models.IntegerField(db_column='Shorthanded_Goals', null=False, default=0)
@@ -68,15 +69,17 @@ class FantasyLeague(models.Model):
     goals_weight = models.DecimalField(db_column='Goals_Weight', max_digits=10, decimal_places=1, null=False, default=3)
     assists_weight = models.DecimalField(db_column='Assists_Weight', max_digits=10, decimal_places=1, null=False, default=2)
     powerplay_goals_weight = models.DecimalField(db_column='Powerplay_Goals_Weight', max_digits=10, decimal_places=1, null=False, default=1)
+    powerplay_points_weight = models.DecimalField(db_column='Powerplay_Points_Weight', max_digits=10, decimal_places=1, null=False, default=1)
     shorthanded_goals_weight = models.DecimalField(db_column='Shorthanded_Goals_Weight', max_digits=10, decimal_places=1, null=False, default=2)
-    shorthanded_assists_weight = models.DecimalField(db_column='Shorthanded_Assists_Weight', max_digits=10, decimal_places=1, null=False, default=1)
-    plus_minus = models.DecimalField(db_column='+/-_Weight', max_digits=10, decimal_places=1, null=False, default=1)  # Field renamed to remove unsuitable characters.
+    shorthanded_points_weight = models.DecimalField(db_column='Shorthanded_Points_Weight', max_digits=10, decimal_places=1, null=False, default=1)
+    plus_minus_weight = models.DecimalField(db_column='+/-_Weight', max_digits=10, decimal_places=1, null=False, default=1)  # Field renamed to remove unsuitable characters.
     penalty_minutes_weight = models.DecimalField(db_column='Penalty_Minutes_Weight', max_digits=10, decimal_places=1, null=False, default=0.5)
     game_winning_goals_weight = models.DecimalField(db_column='Game_Winning_Goals_Weight', max_digits=10, decimal_places=1, null=False, default=1)
     shots_on_goal_weight = models.DecimalField(db_column='Shots_on_Goal_Weight', max_digits=10, decimal_places=1, null=False, default=0.4)
     wins_weight = models.DecimalField(db_column='Wins_Weight', max_digits=10, decimal_places=1, null=False, default=4)
     losses_weight = models.DecimalField(db_column='Losses_Weight', max_digits=10, decimal_places=1, null=False, default=-2)
     overtime_losses_weight = models.DecimalField(db_column='Overtime_Losses_Weight', max_digits=10, decimal_places=1, null=False, default=-2)
+    shots_against_weight = models.DecimalField(db_column='Shots_Against_Weight', max_digits=10, decimal_places=1, null=False, default=0.2)
     saves_weight = models.DecimalField(db_column='Saves_Weight', max_digits=10, decimal_places=1, null=False, default=0.2)
     goals_against_weight = models.DecimalField(db_column='Goals_Against_Weight', max_digits=10, decimal_places=1, null=False, default=-1)
     saves_percentage_weight = models.DecimalField(db_column='Saves_Percentage_Weight', max_digits=10, decimal_places=1, null=False, default=0)
@@ -118,7 +121,7 @@ class FantasyTeam(models.Model):
 class GoalieTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='GoalieTeams_ID', db_column='Player_ID')
     fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, related_name='Goalies_Fantasy_League_Name', db_column='Fantasy_League_Name', null=False)
-    team_name = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='GoaliesTeams_Team_ID', db_column='Team_ID', null=False)
+    team_id = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='GoaliesTeams_Team_ID', db_column='Team_ID', null=False)
 
     class Meta:
         db_table = 'goalie_teams'
@@ -127,7 +130,7 @@ class GoalieTeams(models.Model):
 class SkaterTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='SkaterTeams_ID', db_column='Player_ID')
     fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, related_name='SkaterTeams_Fantasy_League_Name', db_column='Fantasy_League_Name', null=False)
-    team_name = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='SkaterTeams_Team_ID', db_column='Team_ID', null=False)
+    team_id = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='SkaterTeams_Team_ID', db_column='Team_ID', null=False)
 
     class Meta:
         db_table = 'skater_teams'
