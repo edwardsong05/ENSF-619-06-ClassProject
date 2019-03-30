@@ -50,13 +50,9 @@ class Command(BaseCommand):
 
         listGoalies = []
         listSkaters = []
-<<<<<<< HEAD
 
         #for i in range(10):
             #team = teamsData['teams'][i]
-=======
-        
->>>>>>> master
         for team in teamsData['teams']:
             teamURL = team['link']
             r = self.getRequest(baseURL + teamURL + "?expand=team.stats")
@@ -67,12 +63,9 @@ class Command(BaseCommand):
             tempDf = pd.DataFrame.from_records([teamStats])
             dfTeams = dfTeams.append(tempDf, ignore_index=True, sort = False)
 
-<<<<<<< HEAD
 
 
 
-=======
->>>>>>> master
             teamURL = team['link']
             r = self.getRequest(baseURL + teamURL + "?expand=team.roster")
             print(team['name'], r.status_code)
@@ -254,7 +247,7 @@ class Command(BaseCommand):
 
                 sql = \
                 """INSERT INTO `nhl_skaters` (`id`, `goals`, `assists`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
-                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`, 
+                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`,
                     `shots_on_goal`, `center_flag`, `left_wing_flag`, `right_wing_flag`, `defencemen_flag`) \
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                     ON DUPLICATE KEY UPDATE \
