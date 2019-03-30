@@ -32,7 +32,7 @@ class Command(BaseCommand):
                     continue
             print("Added to team ", team.fantasy_team_name, ": goalie", goalie.id.id)
             goalieobj = GoalieTeams.objects.create(fantasy_league_name=league,
-                                                   team_name=team,
+                                                   team_id=team,
                                                    playerid=goalie.id)
             goalieobj.save()
             playerIds.append(goalie.id.id)
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 continue
             print("Added to team", team.fantasy_team_name, ": skater", skater.id.id)
             skaterobj = SkaterTeams.objects.create(fantasy_league_name=league,
-                                           team_name=team,
+                                           team_id=team,
                                            playerid=skater.id)
             skaterobj.save()
             playerIds.append(skater.id.id)
@@ -154,15 +154,17 @@ class Command(BaseCommand):
                         goals_weight = self.genRandomNum(),
                         assists_weight = self.genRandomNum(),
                         powerplay_goals_weight = self.genRandomNum(),
+                        powerplay_points_weight = self.genRandomNum(),
                         shorthanded_goals_weight = self.genRandomNum(),
-                        shorthanded_assists_weight = self.genRandomNum(),
-                        plus_minus = self.genRandomNum(),
+                        shorthanded_points_weight = self.genRandomNum(),
+                        plus_minus_weight = self.genRandomNum(),
                         penalty_minutes_weight = self.genRandomNum(),
                         game_winning_goals_weight = self.genRandomNum(),
                         shots_on_goal_weight = self.genRandomNum(),
                         wins_weight = self.genRandomNum(),
                         losses_weight = self.genRandomNum(),
                         overtime_losses_weight = self.genRandomNum(),
+                        shots_against_weight = self.genRandomNum(),
                         saves_weight = self.genRandomNum(),
                         goals_against_weight = self.genRandomNum(),
                         saves_percentage_weight = self.genRandomNum(),
