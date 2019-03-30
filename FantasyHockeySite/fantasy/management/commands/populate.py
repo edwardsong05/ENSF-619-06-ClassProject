@@ -36,9 +36,15 @@ class Command(BaseCommand):
 
         listGoalies = []
         listSkaters = []
+<<<<<<< HEAD
         #for team in teamsData['teams']:
         for i in range(3):
             team = teamsData['teams'][i]
+=======
+        #for team in teamsData['teams']:    
+        for i in range(10):
+            team = teamsData['teams'][i]    
+>>>>>>> master
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.stats")
             print(team['name'], r.status_code)
@@ -50,7 +56,7 @@ class Command(BaseCommand):
 
 
 
-        #for team in teamsData['teams']:
+        
             teamURL = team['link']
             r = requests.get(baseURL + teamURL + "?expand=team.roster")
             print(team['name'], r.status_code)
