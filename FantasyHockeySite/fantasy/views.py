@@ -98,10 +98,12 @@ def join_league(request):
 def create_fantasy_team_show_leagues(request):
     u_id = request.user.id
     u_id = get_user_model().objects.get(id=u_id)
-    leagues = Participates.objects.filter(userid=u_id)
+    # get fantasy leagues where the user doesn't have a fantasy team
+    teams = FantasyTeam.objects.filter(userid=u_id).values_list('fantasy_league_name', flat=True)
+    leagues = Participates.objects.filter(userid=u_id).exclude(fantasy_league_name__in=teams)
 
     if not leagues.exists():
-        return HttpResponse('You are not participating in any leagues')
+        return HttpResponse('You have no available teams to create')
     else:
         return render(request, 'fantasy/create_fantasy_team_show_leagues.html', {'query_results': leagues})
 
@@ -121,74 +123,40 @@ def create_team(request, league_name):
         ft = FantasyTeam.objects.create(fantasy_team_name=n, fantasy_league_name=league, userid=u_id)
 
         # populate with randomly selected goalies
-        players = set()
         min_goalies = league.minimum_number_of_goalies
-        while True:
-            temp = NhlGoalies.objects.order_by('?').first()
-            if temp.id.id in players:
-                continue
-            else:
-                players.add(temp.id.id)
-                GoalieTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
-
-            if len(players) >= min_goalies:
-                break
+        temp = NhlGoalies.objects.order_by('?')[:min_goalies]
+        for item in temp:
+            GoalieTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
         # populate with randomly selected defencemen
-        players = set()
         min_def = league.minimum_number_of_defencemen
-        while True:
-            temp = NhlSkaters.objects.filter(defencemen_flag=1).order_by('?').first()
-            if temp.id.id in players:
-                continue
-            else:
-                players.add(temp.id.id)
-                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
-
-            if len(players) >= min_def:
-                break
+        temp = NhlSkaters.objects.filter(defencemen_flag=1).order_by('?')[:min_def]
+        for item in temp:
+            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
         # populate with randomly selected right wing
-        players = set()
         min_right = league.minimum_number_of_right_wing
-        while True:
-            temp = NhlSkaters.objects.filter(right_wing_flag=1).order_by('?').first()
-            if temp.id.id in players:
-                continue
-            else:
-                players.add(temp.id.id)
-                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
-
-            if len(players) >= min_right:
-                break
+        temp = NhlSkaters.objects.filter(right_wing_flag=1).order_by('?')[:min_right]
+        for item in temp:
+            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
         # populate with randomly selected left wing
-        players = set()
         min_left = league.minimum_number_of_left_wing
-        while True:
-            temp = NhlSkaters.objects.filter(left_wing_flag=1).order_by('?').first()
-            if temp.id.id in players:
-                continue
-            else:
-                players.add(temp.id.id)
-                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
-
-            if len(players) >= min_left:
-                break
+        temp = NhlSkaters.objects.filter(left_wing_flag=1).order_by('?')[:min_left]
+        for item in temp:
+            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
         # populate with randomly selected center
-        players = set()
         min_cen = league.minimum_number_of_center
-        while True:
-            temp = NhlSkaters.objects.filter(center_flag=1).order_by('?').first()
-            if temp.id.id in players:
-                continue
-            else:
-                players.add(temp.id.id)
-                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+        temp = NhlSkaters.objects.filter(center_flag=1).order_by('?')[:min_cen]
+        for item in temp:
+            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
-            if len(players) >= min_cen:
-                break
         return HttpResponse('Sucessfully created fantasy team: \"' + n + '\" with randomly selected players')
     else:
         return HttpResponse('The team name:\"' + n + '\" already exists within the league, team was not created')
+
+
+def edit_fantasy_team(request):
+    league = get_object_or_404(FantasyLeague, pk=league_name)
+    return render(request, 'fantasy/create_fantasy_team.html', {'league': league})

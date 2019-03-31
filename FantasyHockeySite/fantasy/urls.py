@@ -18,4 +18,5 @@ urlpatterns = [
     path('index/create_fantasy_team/', views.create_fantasy_team_show_leagues, name='create_fantasy_team_show_leagues'),
     path('index/create_fantasy_team/<str:league_name>/', views.create_fantasy_team, name='create_fantasy_team'),
     path('index/create_fantasy_team/<str:league_name>/create_team/', views.create_team, name='create_team'),
+    path('index/edit_fantasy_team/', views.edit_fantasy_team, name='edit_fantasy_team'),
 ]
