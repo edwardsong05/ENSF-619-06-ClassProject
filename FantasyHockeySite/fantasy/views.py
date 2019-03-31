@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
-from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates
+from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam
 
 
 # Create your views here.
@@ -92,3 +93,43 @@ def join_league(request):
 
     p = Participates.objects.create(userid=u_id, fantasy_league_name=league)
     return HttpResponse('Sucessfully joined Fantasy League')
+
+
+def create_fantasy_team_show_leagues(request):
+    u_id = request.user.id
+    u_id = get_user_model().objects.get(id=u_id)
+    leagues = Participates.objects.filter(userid=u_id)
+
+    if not leagues.exists():
+        return HttpResponse('You are not participating in any leagues')
+    else:
+        return render(request, 'fantasy/create_fantasy_team_show_leagues.html', {'query_results': leagues})
+
+
+def create_fantasy_team(request, league_name):
+    league = get_object_or_404(FantasyLeague, pk=league_name)
+    return render(request, 'fantasy/create_fantasy_team.html', {'league': league})
+
+
+def create_team(request, league_name):
+    n = request.GET.get('name')
+    if not FantasyTeam.objects.filter(fantasy_team_name=n, fantasy_league_name=league_name).exists():
+        # create the fantasy team
+        u_id = request.user.id
+        u_id = get_user_model().objects.get(id=u_id)
+        league = FantasyLeague.objects.get(fantasy_league_name=league_name)
+        ft = FantasyTeam.objects.create(fantasy_team_name=n, fantasy_league_name=league, userid=u_id)
+
+        # populate with players
+        goalies = set()
+        min_goalies = league.minimum_number_of_goalies
+        while True:
+            temp = NhlGoalies.objects.order_by('?').first()
+            if temp.id.id in goalies:
+                continue
+            else:
+                goalies.add(temp.id.id)
+                Goalie_Teams.objects.create(team_id=ft) # unfinished
+        return HttpResponse('Sucessfully created fantasy team: \"' + n + '\" with randomly selected players')
+    else:
+        return HttpResponse('The team name:\"' + n + '\" already exists within the league, team was not created')
