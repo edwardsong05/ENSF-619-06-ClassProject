@@ -4,7 +4,7 @@ from django.db import connection
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam
+from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams
 
 
 # Create your views here.
@@ -120,16 +120,75 @@ def create_team(request, league_name):
         league = FantasyLeague.objects.get(fantasy_league_name=league_name)
         ft = FantasyTeam.objects.create(fantasy_team_name=n, fantasy_league_name=league, userid=u_id)
 
-        # populate with players
-        goalies = set()
+        # populate with randomly selected goalies
+        players = set()
         min_goalies = league.minimum_number_of_goalies
         while True:
             temp = NhlGoalies.objects.order_by('?').first()
-            if temp.id.id in goalies:
+            if temp.id.id in players:
                 continue
             else:
-                goalies.add(temp.id.id)
-                Goalie_Teams.objects.create(team_id=ft) # unfinished
+                players.add(temp.id.id)
+                GoalieTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+
+            if len(players) >= min_goalies:
+                break
+
+        # populate with randomly selected defencemen
+        players = set()
+        min_def = league.minimum_number_of_defencemen
+        while True:
+            temp = NhlSkaters.objects.filter(defencemen_flag=1).order_by('?').first()
+            if temp.id.id in players:
+                continue
+            else:
+                players.add(temp.id.id)
+                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+
+            if len(players) >= min_def:
+                break
+
+        # populate with randomly selected right wing
+        players = set()
+        min_right = league.minimum_number_of_right_wing
+        while True:
+            temp = NhlSkaters.objects.filter(right_wing_flag=1).order_by('?').first()
+            if temp.id.id in players:
+                continue
+            else:
+                players.add(temp.id.id)
+                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+
+            if len(players) >= min_right:
+                break
+
+        # populate with randomly selected left wing
+        players = set()
+        min_left = league.minimum_number_of_left_wing
+        while True:
+            temp = NhlSkaters.objects.filter(left_wing_flag=1).order_by('?').first()
+            if temp.id.id in players:
+                continue
+            else:
+                players.add(temp.id.id)
+                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+
+            if len(players) >= min_left:
+                break
+
+        # populate with randomly selected center
+        players = set()
+        min_cen = league.minimum_number_of_center
+        while True:
+            temp = NhlSkaters.objects.filter(center_flag=1).order_by('?').first()
+            if temp.id.id in players:
+                continue
+            else:
+                players.add(temp.id.id)
+                SkaterTeams.objects.create(playerid=temp.id, fantasy_league_name=league, team_id=ft)
+
+            if len(players) >= min_cen:
+                break
         return HttpResponse('Sucessfully created fantasy team: \"' + n + '\" with randomly selected players')
     else:
         return HttpResponse('The team name:\"' + n + '\" already exists within the league, team was not created')
