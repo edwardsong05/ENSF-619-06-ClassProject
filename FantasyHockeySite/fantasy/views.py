@@ -157,6 +157,42 @@ def create_team(request, league_name):
         return HttpResponse('The team name:\"' + n + '\" already exists within the league, team was not created')
 
 
-def edit_fantasy_team(request):
-    league = get_object_or_404(FantasyLeague, pk=league_name)
-    return render(request, 'fantasy/create_fantasy_team.html', {'league': league})
+def edit_fantasy_teams(request):
+    u_id = request.user.id
+    u_id = get_user_model().objects.get(id=u_id)
+    teams = FantasyTeam.objects.filter(userid=u_id)
+    return render(request, 'fantasy/edit_fantasy_teams.html', {'teams': teams})
+
+
+def select_action(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    return render(request, 'fantasy/select_action.html', {'team': team})
+
+
+def add_goalie(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    available_goalies = NhlGoalies.objects.all().exclude(id__in=current_goalies)
+    return render(request, 'fantasy/add_goalie.html', {'team': team, 'available_goalies': available_goalies})
+
+
+def add(request, team_id, nhl_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    goalie = NhlGoalies.objects.get(pk=nhl_id)
+    GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+    return HttpResponse('Goalie was sucessfully added to the team')
+
+
+def view_fantasy_teams(request):
+    u_id = request.user.id
+    u_id = get_user_model().objects.get(id=u_id)
+    teams = FantasyTeam.objects.filter(userid=u_id)
+    return render(request, 'fantasy/view_fantasy_teams.html', {'teams': teams})
+
+
+def view_fantasy_team_players(request, teamid):
+    skater_ids = SkaterTeams.objects.filter(team_id=teamid).values_list('playerid', flat=True)
+    skaters = NhlSkaters.objects.filter(id__in=skater_ids)
+    goalies_ids = GoalieTeams.objects.filter(team_id=teamid).values_list('playerid', flat=True)
+    goalies = NhlGoalies.objects.filter(id__in=goalies_ids)
+    return render(request, 'fantasy/search_player.html', {'query_results1': skaters, 'query_results2': goalies})

@@ -18,5 +18,10 @@ urlpatterns = [
     path('index/create_fantasy_team/', views.create_fantasy_team_show_leagues, name='create_fantasy_team_show_leagues'),
     path('index/create_fantasy_team/<str:league_name>/', views.create_fantasy_team, name='create_fantasy_team'),
     path('index/create_fantasy_team/<str:league_name>/create_team/', views.create_team, name='create_team'),
-    path('index/edit_fantasy_team/', views.edit_fantasy_team, name='edit_fantasy_team'),
+    path('index/edit_fantasy_teams/', views.edit_fantasy_teams, name='edit_fantasy_teams'),
+    path('index/edit_fantasy_teams/<int:team_id>/', views.select_action, name='select_action'),
+    path('index/edit_fantasy_teams/<int:team_id>/add_goalie/', views.add_goalie, name='add_goalie'),
+    path('index/edit_fantasy_teams/<int:team_id>/add_goalie/<int:nhl_id>/', views.add, name='add'),
+    path('index/view_fantasy_teams/', views.view_fantasy_teams, name='view_fantasy_teams'),
+    path('index/view_fantasy_teams/<int:teamid>/', views.view_fantasy_team_players, name='view_fantasy_team_players'),
 ]
