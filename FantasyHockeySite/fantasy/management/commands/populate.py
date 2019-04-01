@@ -27,7 +27,7 @@ class Command(BaseCommand):
         host_name = 'localhost'
         port_num = 3306
         user_name = 'root'
-        psw = 'Paprika!1'
+        psw = 'Password'
         db_name = 'fantasydb'
 
         baseURL = "https://statsapi.web.nhl.com"
