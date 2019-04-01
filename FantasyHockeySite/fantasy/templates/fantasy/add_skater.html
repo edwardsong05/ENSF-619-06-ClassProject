@@ -1,0 +1,59 @@
+<table cellspacing="10">
+    <style>
+        table {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+        th, td {
+            border: 1px solid black;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <tr>
+        <th>Jersey Number</th>
+        <th>Team Name</th>
+        <th>Name</th>
+        <th>Games Played</th>
+        <th>Goals</th>
+        <th>Powerplay Goals</th>
+        <th>Powerplay Points</th>
+        <th>Shorthanded Goals</th>
+        <th>Shorthanded Points</th>
+        <th>+/-</th>
+        <th>Penalty Minutes</th>
+        <th>Game Winning Goals</th>
+        <th>Shots on Goal</th>
+        <th>Position</th>
+    </tr>
+    {% for item in available_skaters %}
+    <tr>
+        <td><a href="{% url 'fantasy:add' team.id item.id.id %}">{{ item.id.jersey_number }}</a></td>
+        <td>{{ item.id.team_name.team_name }}</td>
+        <td>{{ item.id.name }}</td>
+        <td>{{ item.id.games_played }}</td>
+        <td>{{ item.goals }}</td>
+        <td>{{ item.powerplay_goals }}</td>
+        <td>{{ item.powerplay_points }}</td>
+        <td>{{ item.shorthanded_goals }}</td>
+        <td>{{ item.shorthanded_points }}</td>
+        <td>{{ item.plus_minus }}</td>
+        <td>{{ item.penalty_minutes }}</td>
+        <td>{{ item.game_winning_goals }}</td>
+        <td>{{ item.shots_on_goal }}</td>
+        {% if item.center_flag == 1 %}
+        <td>{{ "Center" }}</td>
+        {% endif %}
+        {% if item.left_wing_flag == 1 %}
+        <td>{{ "Left Wing" }}</td>
+        {% endif %}
+        {% if item.right_wing_flag == 1 %}
+        <td>{{ "Right Wing" }}</td>
+        {% endif %}
+        {% if item.defencemen_flag == 1 %}
+        <td>{{ "Defencemen" }}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>

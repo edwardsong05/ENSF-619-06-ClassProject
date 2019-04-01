@@ -171,16 +171,141 @@ def select_action(request, team_id):
 
 def add_goalie(request, team_id):
     team = FantasyTeam.objects.get(pk=team_id)
+    max_players = team.fantasy_league_name.maximum_number_of_players
+    count = SkaterTeams.objects.filter(team_id=team.id).count()
+    count += GoalieTeams.objects.filter(team_id=team.id).count()
+    if max_players <= count:
+        return HttpResponse('You have reached the maximum allowable number of players for this league')
     current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_goalies = NhlGoalies.objects.all().exclude(id__in=current_goalies)
     return render(request, 'fantasy/add_goalie.html', {'team': team, 'available_goalies': available_goalies})
 
 
+def add_center(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    max_players = team.fantasy_league_name.maximum_number_of_players
+    count = SkaterTeams.objects.filter(team_id=team.id).count()
+    count += GoalieTeams.objects.filter(team_id=team.id).count()
+    if max_players <= count:
+        return HttpResponse('You have reached the maximum allowable number of players for this league')
+    current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    available_skaters = NhlSkaters.objects.filter(center_flag=1).exclude(id__in=current_skaters)
+    return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
+
+
+def add_left_wing(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    max_players = team.fantasy_league_name.maximum_number_of_players
+    count = SkaterTeams.objects.filter(team_id=team.id).count()
+    count += GoalieTeams.objects.filter(team_id=team.id).count()
+    if max_players <= count:
+        return HttpResponse('You have reached the maximum allowable number of players for this league')
+    current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    available_skaters = NhlSkaters.objects.filter(left_wing_flag=1).exclude(id__in=current_skaters)
+    return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
+
+
+def add_right_wing(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    max_players = team.fantasy_league_name.maximum_number_of_players
+    count = SkaterTeams.objects.filter(team_id=team.id).count()
+    count += GoalieTeams.objects.filter(team_id=team.id).count()
+    if max_players <= count:
+        return HttpResponse('You have reached the maximum allowable number of players for this league')
+    current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    available_skaters = NhlSkaters.objects.filter(right_wing_flag=1).exclude(id__in=current_skaters)
+    return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
+
+
+def add_defencemen(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    max_players = team.fantasy_league_name.maximum_number_of_players
+    count = SkaterTeams.objects.filter(team_id=team.id).count()
+    count += GoalieTeams.objects.filter(team_id=team.id).count()
+    if max_players <= count:
+        return HttpResponse('You have reached the maximum allowable number of players for this league')
+    current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    available_skaters = NhlSkaters.objects.filter(defencemen_flag=1).exclude(id__in=current_skaters)
+    return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
+
+
 def add(request, team_id, nhl_id):
     team = FantasyTeam.objects.get(pk=team_id)
-    goalie = NhlGoalies.objects.get(pk=nhl_id)
-    GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
-    return HttpResponse('Goalie was sucessfully added to the team')
+    if NhlGoalies.objects.filter(pk=nhl_id).exists():
+        goalie = NhlGoalies.objects.get(pk=nhl_id)
+        GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        return HttpResponse('Goalie was sucessfully added to the team')
+    elif NhlSkaters.objects.filter(pk=nhl_id).exists():
+        skater = NhlSkaters.objects.get(pk=nhl_id)
+        SkaterTeams.objects.create(playerid=skater.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        return HttpResponse('Skater was sucessfully added to the team')
+    else:
+        return HttpResponse('An error has occured: player was not inserted into the team')
+
+
+def remove_goalie(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    min_goalies = team.fantasy_league_name.minimum_number_of_goalies
+    count = GoalieTeams.objects.filter(team_id=team.id).count()
+    if min_goalies >= count:
+        return HttpResponse('You have reached the minimum allowable number of goalies for this league')
+    current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+    goalies = NhlGoalies.objects.filter(id__in=current_goalies)
+    return render(request, 'fantasy/remove_goalie.html', {'team': team, 'goalies': goalies})
+
+
+def remove_center(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    min_center = team.fantasy_league_name.minimum_number_of_center
+    skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
+    centers = NhlSkaters.objects.filter(id__in=skaters, center_flag=1)
+    if min_center >= centers.count():
+        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+    return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': centers})
+
+
+def remove_left_wing(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    min_left = team.fantasy_league_name.minimum_number_of_left_wing
+    skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
+    lefts = NhlSkaters.objects.filter(id__in=skaters, left_wing_flag=1)
+    if min_left >= lefts.count():
+        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+    return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': lefts})
+
+
+def remove_right_wing(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    min_right = team.fantasy_league_name.minimum_number_of_center
+    skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
+    rights = NhlSkaters.objects.filter(id__in=skaters, right_wing_flag=1)
+    if min_right >= rights.count():
+        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+    return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': rights})
+
+
+def remove_defencemen(request, team_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    min_def = team.fantasy_league_name.minimum_number_of_defencemen
+    skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
+    defences = NhlSkaters.objects.filter(id__in=skaters, defencemen_flag=1)
+    if min_def >= defences.count():
+        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+    return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': defences})
+
+
+def remove(request, team_id, nhl_id):
+    team = FantasyTeam.objects.get(pk=team_id)
+    if NhlGoalies.objects.filter(pk=nhl_id).exists():
+        goalie = NhlPlayers.objects.get(pk=nhl_id)
+        GoalieTeams.objects.get(playerid=goalie, team_id=team).delete()
+        return HttpResponse('Sucessfully removed from the team')
+    elif NhlSkaters.objects.filter(pk=nhl_id).exists():
+        skater = NhlPlayers.objects.get(pk=nhl_id)
+        SkaterTeams.objects.get(playerid=skater, team_id=team).delete()
+        return HttpResponse('Sucessfully removed from the team')
+    else:
+        return HttpResponse('An error has occured: player was not removed from the team')
 
 
 def view_fantasy_teams(request):
