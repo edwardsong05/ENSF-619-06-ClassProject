@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
 # Create your models here.
 class NhlTeam(models.Model):
     team_name = models.CharField(db_column='Team_Name', primary_key=True, max_length=45)
@@ -19,7 +20,7 @@ class NhlPlayers(models.Model):
     team_name = models.ForeignKey('NhlTeam', models.CASCADE, db_column='Team_Name', null=False)
     name = models.CharField(db_column='Name', max_length=45, null=False)
     games_played = models.IntegerField(db_column='Games_Played', null=False, default=0)
-    
+
     class Meta:
         db_table = 'nhl_players'
         unique_together = (('jersey_number', 'team_name'),)
@@ -58,11 +59,14 @@ class NhlGoalies(models.Model):
     class Meta:
         db_table = 'nhl_goalies'
 
+
 class LeagueCommissioner(models.Model):
+    # username = models.ForeignKey('Owner', models.CASCADE, db_column='Username', primary_key=True)
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', primary_key=True)
 
     class Meta:
         db_table = 'league_commissioner'
+
 
 class FantasyLeague(models.Model):
     fantasy_league_name = models.CharField(db_column='Fantasy_League_Name', primary_key=True, max_length=45)
@@ -91,7 +95,7 @@ class FantasyLeague(models.Model):
     minimum_number_of_right_wing = models.IntegerField(db_column='Minimum_Number_of_Right_Wing', null=False, default=1)
     minimum_number_of_left_wing = models.IntegerField(db_column='Minimum_Number_of_Left_Wing', null=False, default=1)
     minimum_number_of_center = models.IntegerField(db_column='Minimum_Number_of_Center', null=False, default=1)
-    fantasy_league_invite_code = models.CharField(db_column='Fantasy_League_Invite_Code', max_length=45, null=False)
+    fantasy_league_invite_code = models.CharField(db_column='Fantasy_League_Invite_Code', max_length=45, null=False, unique=True)
     commissionerid = models.ForeignKey('LeagueCommissioner', models.CASCADE, db_column='Commissioner_ID')
 
     class Meta:
@@ -111,7 +115,7 @@ class FantasyTeam(models.Model):
     fantasy_team_name = models.CharField(db_column='Fantasy_Team_Name', max_length=45)
     fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, db_column='Fantasy_League_Name', null=False)
     fantasy_points = models.IntegerField(db_column='Fantasy_Points', null=False, default=0)
-    userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', null=False)
+    userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='Username', null=False)
 
     class Meta:
         db_table = 'fantasy_team'

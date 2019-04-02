@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 #sometimes it will timeout and raise exception
                 print(str(e))
         return r
-    
+
     def handle(self, *args, ** options):
         print("RUNNING")
         # database connection params
@@ -47,10 +47,12 @@ class Command(BaseCommand):
                                         'shotsAllowed','shotsPerGame','winLeadFirstPer',
                                         'winLeadSecondPer','winOppScoreFirst','winOutshootOpp',
                                         'winOutshotByOpp','winScoreFirst','wins'])
-        
+
         listGoalies = []
         listSkaters = []
-        
+
+        #for i in range(10):
+            #team = teamsData['teams'][i]
         for team in teamsData['teams']:
             teamURL = team['link']
             r = self.getRequest(baseURL + teamURL + "?expand=team.stats")
@@ -60,6 +62,9 @@ class Command(BaseCommand):
             teamStats['teamName'] = team['name']
             tempDf = pd.DataFrame.from_records([teamStats])
             dfTeams = dfTeams.append(tempDf, ignore_index=True, sort = False)
+
+
+
 
             teamURL = team['link']
             r = self.getRequest(baseURL + teamURL + "?expand=team.roster")
@@ -242,7 +247,7 @@ class Command(BaseCommand):
 
                 sql = \
                 """INSERT INTO `nhl_skaters` (`id`, `goals`, `assists`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
-                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`, 
+                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`,
                     `shots_on_goal`, `center_flag`, `left_wing_flag`, `right_wing_flag`, `defencemen_flag`) \
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                     ON DUPLICATE KEY UPDATE \
