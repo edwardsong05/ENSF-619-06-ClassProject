@@ -35,10 +35,10 @@ class Command(BaseCommand):
             
             for team in FantasyTeam.objects.filter(fantasy_league_name=league).all():
                 print("League:", league.fantasy_league_name, "Team:", team.fantasy_team_name)
-                points = 0;
+                points = 0
                 for skater in SkaterTeams.objects.filter(team_id=team.id):
                     print("Team:", team.fantasy_team_name, "Skater:", skater.id)
-                    nhlskater = NhlSkaters.objects.filter(id=skater.playerid).first()
+                    nhlskater = NhlSkaters.objects.get(id=skater.playerid)
                     points += nhlskater.goals*goals_weight
                     points += nhlskater.assists*assists_weight
                     points += nhlskater.powerplay_goals*powerplay_goals_weight
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                     points += nhlskater.shots_on_goal*shots_on_goal_weight
                 for goalie in GoalieTeams.objects.filter(team_id=team.id):
                     print("Team:", team.fantasy_team_name, "Goalie:", goalie.id)
-                    nhlgoalie = NhlGoalies.objects.filter(id=goalie.playerid).first()
+                    nhlgoalie = NhlGoalies.objects.get(id=goalie.playerid)
                     points += nhlgoalie.wins*wins_weight
                     points += nhlgoalie.losses*losses_weight
                     points += nhlgoalie.overtime_losses*overtime_losses_weight
