@@ -1,10 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
 from fake_useragent import UserAgent
+from django.conf import settings
 import requests
 import pandas as pd
 import pymysql
 
-
+import os
+import json
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Command(BaseCommand):
     help = 'Updates models in the NHL Team table'
 
@@ -27,9 +30,13 @@ class Command(BaseCommand):
         host_name = 'localhost'
         port_num = 3306
         user_name = 'root'
-        psw = 'Password'
         db_name = 'fantasydb'
-
+        with open(os.path.join(settings.BASE_DIR, 'secrets.json')) as secrets_file:
+            secrets = json.load(secrets_file)
+        try:
+            psw = secrets['DB_PASSWORD']
+        except KeyError:
+            raise ImproperlyConfigured("DB PASSWORD NOT FOUND")
         baseURL = "https://statsapi.web.nhl.com"
         teamsURL = "https://statsapi.web.nhl.com/api/v1/teams"
         print(teamsURL)
