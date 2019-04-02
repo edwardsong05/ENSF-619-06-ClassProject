@@ -5,8 +5,12 @@
     </head>
     <body>
         <div class="header">
-            <h1><a href="{% url 'home' %}">Fantasy Hockey</a></h1>
-            <a href="{% url 'logout' %}">Logout</a>
+            <h1><a href="{% url 'home' %}">Home</a></h1>
+            <div style="display: inline-block">
+                <a href="{% url 'fantasy:index' %}">Fantasy Hockey</a>
+                &nbsp
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
         </div>
         <div class="content-container">
             {% block content %}

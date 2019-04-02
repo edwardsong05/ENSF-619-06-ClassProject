@@ -93,11 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fantasydb',
         'USER': 'root',
-<<<<<<< HEAD
-        'PASSWORD': 'Paprika!1'  # change this to match your password on mysql
-=======
         'PASSWORD': get_secret('DB_PASSWORD'),
->>>>>>> master
     }
 }
 
