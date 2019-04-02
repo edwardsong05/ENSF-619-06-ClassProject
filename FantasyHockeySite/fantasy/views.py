@@ -366,145 +366,217 @@ def update_rules(request, league_name):
     if goals_weight == '':
         pass
     else:
-        league.goals_weight = float(goals_weight)
+        try:
+            league.goals_weight = float(goals_weight)
+        except ValueError:
+            pass
 
     assists_weight = request.GET.get('assists_weight').strip()
     if assists_weight == '':
         pass
     else:
-        league.assists_weight = float(assists_weight)
+        try:
+            league.assists_weight = float(assists_weight)
+        except ValueError:
+            pass
 
     powerplay_goals_weight = request.GET.get('powerplay_goals_weight').strip()
     if powerplay_goals_weight == '':
         pass
     else:
-        league.powerplay_goals_weight = float(powerplay_goals_weight)
+        try:
+            league.powerplay_goals_weight = float(powerplay_goals_weight)
+        except ValueError:
+            pass
 
     powerplay_points_weight = request.GET.get('powerplay_points_weight').strip()
     if powerplay_points_weight == '':
         pass
     else:
-        league.powerplay_points_weight = float(powerplay_points_weight)
+        try:
+            league.powerplay_points_weight = float(powerplay_points_weight)
+        except ValueError:
+            pass
 
     shorthanded_goals_weight = request.GET.get('shorthanded_goals_weight').strip()
     if shorthanded_goals_weight == '':
         pass
     else:
-        league.shorthanded_goals_weight == float(shorthanded_goals_weight)
+        try:
+            league.shorthanded_goals_weight == float(shorthanded_goals_weight)
+        except ValueError:
+            pass
 
     plus_minus_weight = request.GET.get('plus_minus_weight').strip()
     if plus_minus_weight == '':
         pass
     else:
-        league.plus_minus_weight = float(plus_minus_weight)
+        try:
+            league.plus_minus_weight = float(plus_minus_weight)
+        except ValueError:
+            pass
 
     penalty_minutes_weight = request.GET.get('penalty_minutes_weight').strip()
     if penalty_minutes_weight == '':
         pass
     else:
-        league.penalty_minutes_weight = float(penalty_minutes_weight)
+        try:
+            league.penalty_minutes_weight = float(penalty_minutes_weight)
+        except ValueError:
+            pass
 
     game_winning_goals_weight = request.GET.get('game_winning_goals_weight').strip()
     if game_winning_goals_weight == '':
         pass
     else:
-        league.game_winning_goals_weight = float(game_winning_goals_weight)
+        try:
+            league.game_winning_goals_weight = float(game_winning_goals_weight)
+        except ValueError:
+            pass
 
     shots_on_goal_weight = request.GET.get('shots_on_goal_weight').strip()
     if shots_on_goal_weight == '':
         pass
     else:
-        league.shots_on_goal_weight = float(shots_on_goal_weight)
+        try:
+            league.shots_on_goal_weight = float(shots_on_goal_weight)
+        except ValueError:
+            pass
 
     wins_weight = request.GET.get('wins_weight').strip()
     if wins_weight == '':
         pass
     else:
-        league.wins_weight = float(wins_weight)
+        try:
+            league.wins_weight = float(wins_weight)
+        except ValueError:
+            pass
 
     losses_weight = request.GET.get('losses_weight').strip()
     if losses_weight == '':
         pass
     else:
-        league.losses_weight = float(losses_weight)
+        try:
+            league.losses_weight = float(losses_weight)
+        except ValueError:
+            pass
 
     overtime_losses_weight = request.GET.get('overtime_losses_weight').strip()
     if overtime_losses_weight == '':
         pass
     else:
-        league.overtime_losses_weight = float(overtime_losses_weight)
+        try:
+            league.overtime_losses_weight = float(overtime_losses_weight)
+        except ValueError:
+            pass
 
     shots_against_weight = request.GET.get('shots_against_weight').strip()
     if shots_against_weight == '':
         pass
     else:
-        league.shots_against_weight = float(shots_against_weight)
+        try:
+            league.shots_against_weight = float(shots_against_weight)
+        except ValueError:
+            pass
 
     saves_weight = request.GET.get('saves_weight').strip()
     if saves_weight == '':
         pass
     else:
-        league.saves_weight = float(saves_weight)
+        try:
+            league.saves_weight = float(saves_weight)
+        except ValueError:
+            pass
 
     goals_against_weight = request.GET.get('goals_against_weight').strip()
     if goals_against_weight == '':
         pass
     else:
-        league.goals_against_weight = float(goals_against_weight)
+        try:
+            league.goals_against_weight = float(goals_against_weight)
+        except ValueError:
+            pass
 
     saves_percentage_weight = request.GET.get('saves_percentage_weight').strip()
     if saves_percentage_weight == '':
         pass
     else:
-        league.saves_percentage_weight = float(saves_percentage_weight)
+        try:
+            league.saves_percentage_weight = float(saves_percentage_weight)
+        except ValueError:
+            pass
 
     goals_against_average_weight = request.GET.get('goals_against_average_weight').strip()
     if goals_against_average_weight == '':
         pass
     else:
-        league.goals_against_average_weight = float(goals_against_average_weight)
+        try:
+            league.goals_against_average_weight = float(goals_against_average_weight)
+        except ValueError:
+            pass
 
     shutouts_weight = request.GET.get('shutouts_weight').strip()
     if shutouts_weight == '':
         pass
     else:
-        league.shutouts_weight = float(shutouts_weight)
+        try:
+            league.shutouts_weight = float(shutouts_weight)
+        except ValueError:
+            pass
 
     maximum_number_of_players = request.GET.get('maximum_number_of_players').strip()
     if maximum_number_of_players == '':
         pass
     else:
-        league.maximum_number_of_players = int(maximum_number_of_players)
+        try:
+            league.maximum_number_of_players = int(maximum_number_of_players)
+        except ValueError:
+            pass
 
     minimum_number_of_goalies = request.GET.get('minimum_number_of_goalies').strip()
     if minimum_number_of_goalies == '':
         pass
     else:
-        league.minimum_number_of_goalies = int(minimum_number_of_goalies)
+        try:
+            league.minimum_number_of_goalies = int(minimum_number_of_goalies)
+        except ValueError:
+            pass
 
     minimum_number_of_defencemen = request.GET.get('minimum_number_of_defencemen').strip()
     if minimum_number_of_defencemen == '':
         pass
     else:
-        league.minimum_number_of_defencemen = int(minimum_number_of_defencemen)
+        try:
+            league.minimum_number_of_defencemen = int(minimum_number_of_defencemen)
+        except ValueError:
+            pass
 
     minimum_number_of_right_wing = request.GET.get('minimum_number_of_right_wing').strip()
     if minimum_number_of_right_wing == '':
         pass
     else:
-        league.minimum_number_of_right_wing = int(minimum_number_of_right_wing)
+        try:
+            league.minimum_number_of_right_wing = int(minimum_number_of_right_wing)
+        except ValueError:
+            pass
 
     minimum_number_of_left_wing = request.GET.get('minimum_number_of_left_wing').strip()
     if minimum_number_of_left_wing == '':
         pass
     else:
-        league.minimum_number_of_left_wing = int(minimum_number_of_left_wing)
+        try:
+            league.minimum_number_of_left_wing = int(minimum_number_of_left_wing)
+        except ValueError:
+            pass
 
     minimum_number_of_center = request.GET.get('minimum_number_of_center').strip()
     if minimum_number_of_center == '':
         pass
     else:
-        league.minimum_number_of_center = int(minimum_number_of_center)
+        try:
+            league.minimum_number_of_center = int(minimum_number_of_center)
+        except ValueError:
+            pass
 
     league.save()
     return HttpResponse('Sucessfully made changes to league rules')

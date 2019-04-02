@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fantasydb',
         'USER': 'root',
-        'PASSWORD': 'Paprika!1'  # change this to match your password on mysql
+        'PASSWORD': 'Password'  # change this to match your password on mysql
     }
 }
 
