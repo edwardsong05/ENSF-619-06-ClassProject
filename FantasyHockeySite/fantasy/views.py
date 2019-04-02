@@ -13,8 +13,9 @@ def index(request):
 
 
 def nhl_players(request):
-    query_results = NhlPlayers.objects.all()
-    return render(request, 'fantasy/nhl_players.html', {'query_results': query_results})
+    skaters = NhlSkaters.objects.select_related('id').all()
+    goalies = NhlGoalies.objects.select_related('id').all()
+    return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
 def nhl_teams(request):
@@ -35,7 +36,7 @@ def search_player(request):
     teams = NhlTeam.objects.filter(team_name__icontains=tn)
     skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
     goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
-    return render(request, 'fantasy/search_player.html', {'query_results1': skaters, 'query_results2': goalies})
+    return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
 def create_fantasy_league(request):
@@ -320,7 +321,7 @@ def view_fantasy_team_players(request, teamid):
     skaters = NhlSkaters.objects.filter(id__in=skater_ids)
     goalies_ids = GoalieTeams.objects.filter(team_id=teamid).values_list('playerid', flat=True)
     goalies = NhlGoalies.objects.filter(id__in=goalies_ids)
-    return render(request, 'fantasy/search_player.html', {'query_results1': skaters, 'query_results2': goalies})
+    return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
 def view_fantasy_leagues(request):
