@@ -1,28 +1,32 @@
-<table cellspacing="10">
-    <style>
-        table {
-            border-collapse: collapse;
-            border: 1px solid black;
-        }
-        th, td {
-            border: 1px solid black;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <tr>
-        <th>Jersey Number</th>
-        <th>Team Name</th>
-        <th>Name</th>
-        <th>Games Played</th>
-    </tr>
-    {% for item in query_results %}
-    <tr>
-        <td>{{ item.jersey_number }}</td>
-        <td>{{ item.team_name.team_name }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.games_played }}</td>
-    </tr>
-    {% endfor %}
-</table>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <table cellspacing="10">
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+            th, td {
+                border: 1px solid black;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
+        <tr>
+            <th>Jersey Number</th>
+            <th>Team Name</th>
+            <th>Name</th>
+            <th>Games Played</th>
+        </tr>
+        {% for item in query_results %}
+        <tr>
+            <td>{{ item.jersey_number }}</td>
+            <td>{{ item.team_name.team_name }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.games_played }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

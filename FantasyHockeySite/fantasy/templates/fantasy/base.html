@@ -1,0 +1,15 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    </head>
+    <body>
+        <div class="header">
+            <h1><a href="{% url 'fantasy:index' %}">Fantasy Hockey</a></h1>
+        </div>
+        <div class="content-container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

@@ -1,5 +1,9 @@
-<form action="{% url 'fantasy:create_team' league.fantasy_league_name %}" method="get">
-    Team Name:<br> <input type="text" name="name">
-    <br>
-    <input type="submit" value="Submit">
-</form>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <form action="{% url 'fantasy:create_team' league.fantasy_league_name %}" method="get">
+        Team Name:<br> <input type="text" name="name">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

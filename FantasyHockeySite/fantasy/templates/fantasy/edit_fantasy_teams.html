@@ -1,24 +1,28 @@
-<table cellspacing="10">
-    <style>
-        table {
-            border-collapse: collapse;
-            border: 1px solid black;
-        }
-        th, td {
-            border: 1px solid black;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <tr>
-        <th>Team Name</th>
-        <th>Fantasy League</th>
-    </tr>
-    {% for item in teams %}
-    <tr>
-        <td><a href="{% url 'fantasy:select_action' item.id %}">{{ item.fantasy_team_name }}</a></td>
-        <td>{{ item.fantasy_league_name.fantasy_league_name }}</td>
-    </tr>
-    {% endfor %}
-</table>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <table cellspacing="10">
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+            th, td {
+                border: 1px solid black;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
+        <tr>
+            <th>Team Name</th>
+            <th>Fantasy League</th>
+        </tr>
+        {% for item in teams %}
+        <tr>
+            <td><a href="{% url 'fantasy:select_action' item.id %}">{{ item.fantasy_team_name }}</a></td>
+            <td>{{ item.fantasy_league_name.fantasy_league_name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

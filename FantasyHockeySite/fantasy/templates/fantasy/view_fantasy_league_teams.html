@@ -1,26 +1,30 @@
-<table cellspacing="10">
-    <style>
-        table {
-            border-collapse: collapse;
-            border: 1px solid black;
-        }
-        th, td {
-            border: 1px solid black;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <tr>
-        <th>Team Name</th>
-        <th>User</th>
-        <th>Points</th>
-    </tr>
-    {% for item in teams %}
-    <tr>
-        <td><a href="{% url 'fantasy:view_fantasy_team_players' item.id %}">{{ item.fantasy_team_name }}</a></td>
-        <td>{{ item.userid.username }}</td>
-        <td>{{ item.fantasy_points }}</td>
-    </tr>
-    {% endfor %}
-</table>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <table cellspacing="10">
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+            th, td {
+                border: 1px solid black;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
+        <tr>
+            <th>Team Name</th>
+            <th>User</th>
+            <th>Points</th>
+        </tr>
+        {% for item in teams %}
+        <tr>
+            <td><a href="{% url 'fantasy:view_fantasy_team_players' item.id %}">{{ item.fantasy_team_name }}</a></td>
+            <td>{{ item.userid.username }}</td>
+            <td>{{ item.fantasy_points }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

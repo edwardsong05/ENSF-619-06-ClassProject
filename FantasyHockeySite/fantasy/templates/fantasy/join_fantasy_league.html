@@ -1,5 +1,9 @@
-<form action="{% url 'fantasy:join_league' %}" method="get">
-    Invite Code:<br> <input type="text" name="code">
-    <br>
-    <input type="submit" value="Submit">
-</form>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <form action="{% url 'fantasy:join_league' %}" method="get">
+        Invite Code:<br> <input type="text" name="code">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

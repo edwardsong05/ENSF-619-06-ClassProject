@@ -1,40 +1,44 @@
-<table cellspacing="10">
-    <style>
-        table {
-            border-collapse: collapse;
-            border: 1px solid black;
-        }
-        th, td {
-            border: 1px solid black;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <tr>
-        <th>Jersey Number</th>
-        <th>Team Name</th>
-        <th>Name</th>
-        <th>Games Played</th>
-        <th>Wins</th>
-        <th>Losses</th>
-        <th>Overtime Lossses</th>
-        <th>Shots Against</th>
-        <th>Saves</th>
-        <th>Shutouts</th>
-    </tr>
-    {% for item in goalies %}
-    <tr>
-        <td><a href="{% url 'fantasy:remove' team.id item.id.id %}">{{ item.id.jersey_number }}</a></td>
-        <td>{{ item.id.team_name.team_name }}</td>
-        <td>{{ item.id.name }}</td>
-        <td>{{ item.id.games_played }}</td>
-        <td>{{ item.wins }}</td>
-        <td>{{ item.loses }}</td>
-        <td>{{ item.overtime_losses }}</td>
-        <td>{{ item.shots_against }}</td>
-        <td>{{ item.saves }}</td>
-        <td>{{ item.shutouts }}</td>
-    </tr>
-    {% endfor %}
-</table>
+{% extends 'fantasy/base.html' %}
+
+{% block content %}
+    <table cellspacing="10">
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+            th, td {
+                border: 1px solid black;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
+        <tr>
+            <th>Jersey Number</th>
+            <th>Team Name</th>
+            <th>Name</th>
+            <th>Games Played</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Overtime Lossses</th>
+            <th>Shots Against</th>
+            <th>Saves</th>
+            <th>Shutouts</th>
+        </tr>
+        {% for item in goalies %}
+        <tr>
+            <td><a href="{% url 'fantasy:remove' team.id item.id.id %}">{{ item.id.jersey_number }}</a></td>
+            <td>{{ item.id.team_name.team_name }}</td>
+            <td>{{ item.id.name }}</td>
+            <td>{{ item.id.games_played }}</td>
+            <td>{{ item.wins }}</td>
+            <td>{{ item.loses }}</td>
+            <td>{{ item.overtime_losses }}</td>
+            <td>{{ item.shots_against }}</td>
+            <td>{{ item.saves }}</td>
+            <td>{{ item.shutouts }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
