@@ -11,16 +11,27 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+##Load secret file
+with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
+    secrets = json.load(secrets_file)
+
+def get_secret(setting, secrets=secrets):
+    """Get secret setting or fail with ImproperlyConfigured"""
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured("Set the {} setting".format(setting))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'r9wg7c*cf$j&rr^u60w00q^v$-vtul1*v*557k^6ls82@s+@*u'
+SECRET_KEY = get_secret('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,7 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fantasydb',
         'USER': 'root',
-        'PASSWORD': 'Paprika!1'  # change this to match your password on mysql
+        'PASSWORD': get_secret('DB_PASSWORD'),
     }
 }
 
