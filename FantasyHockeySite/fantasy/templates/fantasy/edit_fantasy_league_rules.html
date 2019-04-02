@@ -1,0 +1,22 @@
+<table cellspacing="10">
+    <style>
+        table {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+        th, td {
+            border: 1px solid black;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <tr>
+        <th>League Name</th>
+    </tr>
+    {% for item in leagues %}
+    <tr>
+        <td><a href="{% url 'fantasy:edit_league_rules' item.fantasy_league_name %}">{{ item.fantasy_league_name }}</a></td>
+    </tr>
+    {% endfor %}
+</table>

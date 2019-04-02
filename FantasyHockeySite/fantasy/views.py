@@ -4,7 +4,7 @@ from django.db import connection
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams
+from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams, Participates
 
 
 # Create your views here.
@@ -321,3 +321,190 @@ def view_fantasy_team_players(request, teamid):
     goalies_ids = GoalieTeams.objects.filter(team_id=teamid).values_list('playerid', flat=True)
     goalies = NhlGoalies.objects.filter(id__in=goalies_ids)
     return render(request, 'fantasy/search_player.html', {'query_results1': skaters, 'query_results2': goalies})
+
+
+def view_fantasy_leagues(request):
+    u_id = request.user.id
+    u_id = get_user_model().objects.get(id=u_id)
+    league_names = Participates.objects.filter(userid=u_id).values_list('fantasy_league_name', flat=True)
+    leagues = FantasyLeague.objects.filter(fantasy_league_name__in=league_names)
+    return render(request, 'fantasy/view_fantasy_leagues.html', {'leagues': leagues})
+
+
+def view_fantasy_league_teams(request, f_name):
+    teams = FantasyTeam.objects.select_related('userid').filter(fantasy_league_name=f_name)
+    return render(request, 'fantasy/view_fantasy_league_teams.html', {'teams': teams})
+
+
+def edit_fantasy_league_rules(request):
+    u_id = request.user.id
+    u_id = get_user_model().objects.get(id=u_id)
+    # check if the user is a commisioner (has leagues)
+    if not LeagueCommissioner.objects.filter(userid=u_id).exists():
+        return HttpResponse('You have no leagues to edit')
+    else:
+        # get leagues where the user can edit the rules (no current teams in the league)
+        commissioner = LeagueCommissioner.objects.get(pk=u_id)
+        leagues = FantasyLeague.objects.filter(commissionerid=commissioner)
+        par = Participates.objects.filter(fantasy_league_name__in=leagues).values_list('fantasy_league_name', flat=True)
+        edit_leagues = leagues.exclude(fantasy_league_name__in=par)
+        if edit_leagues.exists():
+            return render(request, 'fantasy/edit_fantasy_league_rules.html', {'leagues': edit_leagues})
+        else:
+            return HttpResponse('All leagues currently have participants, unable to edit leagues which have participants')
+
+
+def edit_league_rules(request, league_name):
+    league = FantasyLeague.objects.get(pk=league_name)
+    return render(request, 'fantasy/edit_league_rules.html', {'league': league})
+
+
+def update_rules(request, league_name):
+    league = FantasyLeague.objects.get(pk=league_name)
+
+    goals_weight = request.GET.get('goals_weight').strip()
+    if goals_weight == '':
+        pass
+    else:
+        league.goals_weight = float(goals_weight)
+
+    assists_weight = request.GET.get('assists_weight').strip()
+    if assists_weight == '':
+        pass
+    else:
+        league.assists_weight = float(assists_weight)
+
+    powerplay_goals_weight = request.GET.get('powerplay_goals_weight').strip()
+    if powerplay_goals_weight == '':
+        pass
+    else:
+        league.powerplay_goals_weight = float(powerplay_goals_weight)
+
+    powerplay_points_weight = request.GET.get('powerplay_points_weight').strip()
+    if powerplay_points_weight == '':
+        pass
+    else:
+        league.powerplay_points_weight = float(powerplay_points_weight)
+
+    shorthanded_goals_weight = request.GET.get('shorthanded_goals_weight').strip()
+    if shorthanded_goals_weight == '':
+        pass
+    else:
+        league.shorthanded_goals_weight == float(shorthanded_goals_weight)
+
+    plus_minus_weight = request.GET.get('plus_minus_weight').strip()
+    if plus_minus_weight == '':
+        pass
+    else:
+        league.plus_minus_weight = float(plus_minus_weight)
+
+    penalty_minutes_weight = request.GET.get('penalty_minutes_weight').strip()
+    if penalty_minutes_weight == '':
+        pass
+    else:
+        league.penalty_minutes_weight = float(penalty_minutes_weight)
+
+    game_winning_goals_weight = request.GET.get('game_winning_goals_weight').strip()
+    if game_winning_goals_weight == '':
+        pass
+    else:
+        league.game_winning_goals_weight = float(game_winning_goals_weight)
+
+    shots_on_goal_weight = request.GET.get('shots_on_goal_weight').strip()
+    if shots_on_goal_weight == '':
+        pass
+    else:
+        league.shots_on_goal_weight = float(shots_on_goal_weight)
+
+    wins_weight = request.GET.get('wins_weight').strip()
+    if wins_weight == '':
+        pass
+    else:
+        league.wins_weight = float(wins_weight)
+
+    losses_weight = request.GET.get('losses_weight').strip()
+    if losses_weight == '':
+        pass
+    else:
+        league.losses_weight = float(losses_weight)
+
+    overtime_losses_weight = request.GET.get('overtime_losses_weight').strip()
+    if overtime_losses_weight == '':
+        pass
+    else:
+        league.overtime_losses_weight = float(overtime_losses_weight)
+
+    shots_against_weight = request.GET.get('shots_against_weight').strip()
+    if shots_against_weight == '':
+        pass
+    else:
+        league.shots_against_weight = float(shots_against_weight)
+
+    saves_weight = request.GET.get('saves_weight').strip()
+    if saves_weight == '':
+        pass
+    else:
+        league.saves_weight = float(saves_weight)
+
+    goals_against_weight = request.GET.get('goals_against_weight').strip()
+    if goals_against_weight == '':
+        pass
+    else:
+        league.goals_against_weight = float(goals_against_weight)
+
+    saves_percentage_weight = request.GET.get('saves_percentage_weight').strip()
+    if saves_percentage_weight == '':
+        pass
+    else:
+        league.saves_percentage_weight = float(saves_percentage_weight)
+
+    goals_against_average_weight = request.GET.get('goals_against_average_weight').strip()
+    if goals_against_average_weight == '':
+        pass
+    else:
+        league.goals_against_average_weight = float(goals_against_average_weight)
+
+    shutouts_weight = request.GET.get('shutouts_weight').strip()
+    if shutouts_weight == '':
+        pass
+    else:
+        league.shutouts_weight = float(shutouts_weight)
+
+    maximum_number_of_players = request.GET.get('maximum_number_of_players').strip()
+    if maximum_number_of_players == '':
+        pass
+    else:
+        league.maximum_number_of_players = int(maximum_number_of_players)
+
+    minimum_number_of_goalies = request.GET.get('minimum_number_of_goalies').strip()
+    if minimum_number_of_goalies == '':
+        pass
+    else:
+        league.minimum_number_of_goalies = int(minimum_number_of_goalies)
+
+    minimum_number_of_defencemen = request.GET.get('minimum_number_of_defencemen').strip()
+    if minimum_number_of_defencemen == '':
+        pass
+    else:
+        league.minimum_number_of_defencemen = int(minimum_number_of_defencemen)
+
+    minimum_number_of_right_wing = request.GET.get('minimum_number_of_right_wing').strip()
+    if minimum_number_of_right_wing == '':
+        pass
+    else:
+        league.minimum_number_of_right_wing = int(minimum_number_of_right_wing)
+
+    minimum_number_of_left_wing = request.GET.get('minimum_number_of_left_wing').strip()
+    if minimum_number_of_left_wing == '':
+        pass
+    else:
+        league.minimum_number_of_left_wing = int(minimum_number_of_left_wing)
+
+    minimum_number_of_center = request.GET.get('minimum_number_of_center').strip()
+    if minimum_number_of_center == '':
+        pass
+    else:
+        league.minimum_number_of_center = int(minimum_number_of_center)
+
+    league.save()
+    return HttpResponse('Sucessfully made changes to league rules')
