@@ -1,6 +1,6 @@
 from fantasy.models import FantasyLeague, FantasyTeam, NhlPlayers, \
-    SkaterTeams, GoalieTeams, NhlSkaters, NhlGoalies
-from .serializers import LeaguesSerializer, TeamsSerializer, FantasyPlayersSerializer
+    SkaterTeams, GoalieTeams, NhlSkaters, NhlGoalies, NhlTeam
+from apis import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from django.http import Http404
@@ -15,7 +15,44 @@ class ListAllLeaguesView(generics.ListAPIView):
     Provides a get method handler.
     """
     queryset = FantasyLeague.objects.all()
-    serializer_class = LeaguesSerializer
+    serializer_class = serializers.LeaguesSerializer
+
+class ListAllNhlTeamsView(generics.ListAPIView):
+    """
+    Provides a get method handler.
+    """
+    queryset = NhlTeam.objects.all()
+    serializer_class = serializers.NhlTeamsSerializer
+
+
+@permission_classes((permissions.AllowAny,))
+class ListPlayersInNhlTeamView(APIView):
+    def get_object(self, pk):
+        try:
+            team = NhlTeam.objects.get(team_name=pk)
+            players = NhlPlayers.objects.filter(team_name=pk)
+            for player in players:
+                if NhlSkaters.objects.filter(id=player.id).exists():
+                    nhlskater = NhlSkaters.objects.get(id=player.id)
+                    if nhlskater.center_flag:
+                        player.position = "Center"
+                    elif nhlskater.left_wing_flag:
+                        player.position = "Left Wing"
+                    elif nhlskater.right_wing_flag:
+                        player.position = "Right Wing"
+                    elif nhlskater.defencemen_flag:
+                        player.position = "Defenceman"
+                else:
+                    player.position='Goalie'
+                    
+            return players
+        except ObjectDoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None, **kwargs):
+        queryset = self.get_object(pk)
+        serializer = serializers.NhlPlayersSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 @permission_classes((permissions.AllowAny,))
 class ListTeamsInLeagueView(APIView):
@@ -24,12 +61,12 @@ class ListTeamsInLeagueView(APIView):
             league = FantasyLeague.objects.get(fantasy_league_name=pk)
             teams = FantasyTeam.objects.filter(fantasy_league_name=league.fantasy_league_name)
             return teams
-        except FantasyLeague.DoesNotExist:
+        except ObjectDoesNotExist:
             raise Http404
     
     def get(self, request, pk, format=None, **kwargs):
         teams = self.get_object(pk)
-        serializer = TeamsSerializer(teams, many=True)
+        serializer = serializers.TeamsSerializer(teams, many=True)
         return Response(serializer.data)
 
 
@@ -38,7 +75,7 @@ class ListAllTeamsView(generics.ListAPIView):
     Provides a get method handler.
     """
     queryset = FantasyTeam.objects.all()
-    serializer_class = TeamsSerializer
+    serializer_class = serializers.TeamsSerializer
     
 @permission_classes((permissions.AllowAny,))
 class ListAllTeamPlayersView(APIView):
@@ -124,5 +161,5 @@ class ListAllTeamPlayersView(APIView):
     
     def get(self, request, pk, format=None, **kwargs):
         players = self.get_object(pk)
-        serializer = FantasyPlayersSerializer(players, many=True)
+        serializer = serializers.FantasyPlayersSerializer(players, many=True)
         return Response(serializer.data)

@@ -1,6 +1,20 @@
 from rest_framework import serializers
-from fantasy.models import FantasyLeague, FantasyTeam, NhlPlayers
+from fantasy.models import FantasyLeague, FantasyTeam, NhlPlayers, NhlTeam
 
+class NhlPlayersSerializer(serializers.ModelSerializer):
+    position = serializers.SerializerMethodField()
+    
+    def get_position(self, obj):
+        return obj.position
+
+    class Meta:
+        model = NhlPlayers
+        fields = ("name", "jersey_number", "games_played", "position")
+
+class NhlTeamsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NhlTeam
+        fields = ("team_name","wins","losses")
 
 class LeaguesSerializer(serializers.ModelSerializer):
     class Meta:
