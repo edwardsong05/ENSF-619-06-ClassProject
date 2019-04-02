@@ -101,8 +101,7 @@ class ListAllTeamPlayersView(APIView):
             shots_against_weight = league.shots_against_weight
             saves_weight = league.saves_weight 
             goals_against_weight = league.goals_against_weight 
-            saves_percentage_weight = league.saves_percentage_weight 
-            goals_against_average_weight = league.goals_against_average_weight 
+            saves_percentage_weight = league.saves_percentage_weight
             shutouts_weight = league.shutouts_weight 
 
             fantasyPoints = dict()
