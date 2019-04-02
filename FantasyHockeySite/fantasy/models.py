@@ -87,7 +87,7 @@ class FantasyLeague(models.Model):
     saves_weight = models.DecimalField(db_column='Saves_Weight', max_digits=10, decimal_places=1, null=False, default=0.2)
     goals_against_weight = models.DecimalField(db_column='Goals_Against_Weight', max_digits=10, decimal_places=1, null=False, default=-1)
     saves_percentage_weight = models.DecimalField(db_column='Saves_Percentage_Weight', max_digits=10, decimal_places=1, null=False, default=0)
-    goals_against_average_weight = models.DecimalField(db_column='Goals_Against_Average_Weight', max_digits=10, decimal_places=1, null=False, default=0)
+    #goals_against_average_weight = models.DecimalField(db_column='Goals_Against_Average_Weight', max_digits=10, decimal_places=1, null=False, default=0)
     shutouts_weight = models.DecimalField(db_column='Shutouts_Weight', max_digits=10, decimal_places=1, null=False, default=2)
     maximum_number_of_players = models.IntegerField(db_column='Maximum_Number_of_Players', null=False, default=20)
     minimum_number_of_goalies = models.IntegerField(db_column='Minimum_Number_of_Goalies', null=False, default=1)

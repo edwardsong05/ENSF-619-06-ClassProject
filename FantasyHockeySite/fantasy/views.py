@@ -506,14 +506,14 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    goals_against_average_weight = request.GET.get('goals_against_average_weight').strip()
-    if goals_against_average_weight == '':
-        pass
-    else:
-        try:
-            league.goals_against_average_weight = float(goals_against_average_weight)
-        except ValueError:
-            pass
+    #goals_against_average_weight = request.GET.get('goals_against_average_weight').strip()
+    #if goals_against_average_weight == '':
+    #    pass
+    #else:
+    #    try:
+    #        league.goals_against_average_weight = float(goals_against_average_weight)
+    #    except ValueError:
+    #        pass
 
     shutouts_weight = request.GET.get('shutouts_weight').strip()
     if shutouts_weight == '':

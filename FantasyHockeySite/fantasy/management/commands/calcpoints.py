@@ -9,30 +9,30 @@ class Command(BaseCommand):
     numUsers = 20
     numLeagues = 10
     numLeagueParticipants=10
-    
+
     def handle(self, *args, ** options):
         for league in FantasyLeague.objects.all():
-            
+
             goals_weight = league.goals_weight
-            assists_weight = league.assists_weight 
-            powerplay_goals_weight = league.powerplay_goals_weight 
-            powerplay_points_weight = league.powerplay_goals_weight 
-            shorthanded_goals_weight = league.shorthanded_goals_weight 
-            shorthanded_points_weight = league.shorthanded_points_weight 
+            assists_weight = league.assists_weight
+            powerplay_goals_weight = league.powerplay_goals_weight
+            powerplay_points_weight = league.powerplay_points_weight
+            shorthanded_goals_weight = league.shorthanded_goals_weight
+            shorthanded_points_weight = league.shorthanded_points_weight
             plus_minus_weight = league.plus_minus_weight
-            penalty_minutes_weight = league.penalty_minutes_weight 
-            game_winning_goals_weight = league.game_winning_goals_weight 
-            shots_on_goal_weight = league.shots_on_goal_weight 
-            wins_weight = league.wins_weight 
-            losses_weight = league.losses_weight 
-            overtime_losses_weight = league.overtime_losses_weight 
+            penalty_minutes_weight = league.penalty_minutes_weight
+            game_winning_goals_weight = league.game_winning_goals_weight
+            shots_on_goal_weight = league.shots_on_goal_weight
+            wins_weight = league.wins_weight
+            losses_weight = league.losses_weight
+            overtime_losses_weight = league.overtime_losses_weight
             shots_against_weight = league.shots_against_weight
-            saves_weight = league.saves_weight 
-            goals_against_weight = league.goals_against_weight 
-            saves_percentage_weight = league.saves_percentage_weight 
-            goals_against_average_weight = league.goals_against_average_weight 
-            shutouts_weight = league.shutouts_weight 
-            
+            saves_weight = league.saves_weight
+            goals_against_weight = league.goals_against_weight
+            saves_percentage_weight = league.saves_percentage_weight
+            #goals_against_average_weight = league.goals_against_average_weight
+            shutouts_weight = league.shutouts_weight
+
             for team in FantasyTeam.objects.filter(fantasy_league_name=league).all():
                 print("League:", league.fantasy_league_name, "Team:", team.fantasy_team_name)
                 points = 0
@@ -42,7 +42,7 @@ class Command(BaseCommand):
                     points += nhlskater.goals*goals_weight
                     points += nhlskater.assists*assists_weight
                     points += nhlskater.powerplay_goals*powerplay_goals_weight
-                    points += nhlskater.powerplay_points*powerplay_points_weight
+                    points += nhlskater.powerplay_points*powgerplay_points_weight
                     points += nhlskater.shorthanded_goals*shorthanded_goals_weight
                     points += nhlskater.shorthanded_points*shorthanded_points_weight
                     points += nhlskater.plus_minus*plus_minus_weight
