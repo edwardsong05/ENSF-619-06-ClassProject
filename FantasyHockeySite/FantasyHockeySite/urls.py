@@ -18,6 +18,7 @@ from django.urls import include, path
 from django.views.generic.base import TemplateView
 from fantasy import views
 
+
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('fantasy/', include('fantasy.urls', namespace='fantasy')),
