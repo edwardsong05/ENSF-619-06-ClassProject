@@ -61,7 +61,6 @@ class NhlGoalies(models.Model):
 
 
 class LeagueCommissioner(models.Model):
-    # username = models.ForeignKey('Owner', models.CASCADE, db_column='Username', primary_key=True)
     userid = models.ForeignKey(get_user_model(), models.CASCADE, db_column='User_ID', primary_key=True)
 
     class Meta:
@@ -123,7 +122,6 @@ class FantasyTeam(models.Model):
 
 class GoalieTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='GoalieTeams_ID', db_column='Player_ID')
-    #fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, related_name='Goalies_Fantasy_League_Name', db_column='Fantasy_League_Name', null=False)
     team_id = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='GoaliesTeams_Team_ID', db_column='Team_ID', null=False)
 
     class Meta:
@@ -132,7 +130,6 @@ class GoalieTeams(models.Model):
 
 class SkaterTeams(models.Model):
     playerid = models.ForeignKey('NhlPlayers', models.CASCADE, related_name='SkaterTeams_ID', db_column='Player_ID')
-    #fantasy_league_name = models.ForeignKey(FantasyLeague, models.CASCADE, related_name='SkaterTeams_Fantasy_League_Name', db_column='Fantasy_League_Name', null=False)
     team_id = models.ForeignKey(FantasyTeam, models.CASCADE, related_name='SkaterTeams_Team_ID', db_column='Team_ID', null=False)
 
     class Meta:
