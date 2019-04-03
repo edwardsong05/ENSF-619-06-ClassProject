@@ -42,7 +42,7 @@ class Command(BaseCommand):
                     points += nhlskater.goals*goals_weight
                     points += nhlskater.assists*assists_weight
                     points += nhlskater.powerplay_goals*powerplay_goals_weight
-                    points += nhlskater.powerplay_points*powgerplay_points_weight
+                    points += nhlskater.powerplay_points*powerplay_points_weight
                     points += nhlskater.shorthanded_goals*shorthanded_goals_weight
                     points += nhlskater.shorthanded_points*shorthanded_points_weight
                     points += nhlskater.plus_minus*plus_minus_weight

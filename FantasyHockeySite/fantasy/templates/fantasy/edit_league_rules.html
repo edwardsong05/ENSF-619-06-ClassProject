@@ -1,139 +1,151 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <form action="{% url 'fantasy:update_rules' league.fantasy_league_name %}" method="get">
+    <form action="{% url 'fantasy:update_rules' league.fantasy_league_name %}" method="post">
+        {% csrf_token %}
+        <h2>Point Weights</h2>
+        Only numbers with three digits will be accepted, a single decimal place is allowed.
+        <br>
+        <i>i.e. enter the following format: xx.x</i>
+        <br>
+        <br>
         <table>
             <tr>
-                <th>Stat</th>
-                <th>Current Value</th>
-                <th>Changed Value</th>
+                <th><h3>Weight</h3></th>
+                <th><h3>Current Value</h3></th>
+                <th><h3>Changed Value</h3></th>
             </tr>
             <tr>
-                <th>Goals Weight</th>
-                <th>{{ league.goals_weight }}</th>
-                <th><input type="text" name="goals_weight"></th>
+                <td>Goals Weight</td>
+                <td>{{ league.goals_weight }}</td>
+                <td><input type="text" name="goals_weight"></td>
             </tr>
             <tr>
-                <th>Assists Weight</th>
-                <th>{{ league.assists_weight }}</th>
-                <th><input type="text" name="assists_weight"></th>
+                <td>Assists Weight</td>
+                <td>{{ league.assists_weight }}</td>
+                <td><input type="text" name="assists_weight"></td>
             </tr>
             <tr>
-                <th>Powerplay Goals Weight</th>
-                <th>{{ league.powerplay_goals_weight }}</th>
-                <th><input type="text" name="powerplay_goals_weight"></th>
+                <td>Powerplay Goals Weight</td>
+                <td>{{ league.powerplay_goals_weight }}</td>
+                <td><input type="text" name="powerplay_goals_weight"></td>
             </tr>
             <tr>
-                <th>Powerplay Points Weight</th>
-                <th>{{ league.powerplay_points_weight }}</th>
-                <th><input type="text" name="powerplay_points_weight"></th>
+                <td>Powerplay Points Weight</td>
+                <td>{{ league.powerplay_points_weight }}</td>
+                <td><input type="text" name="powerplay_points_weight"></td>
             </tr>
             <tr>
-                <th>Shorthanded Goals Weight</th>
-                <th>{{ league.powerplay_goals_weight }}</th>
-                <th><input type="text" name="shorthanded_goals_weight"></th>
+                <td>Shorthanded Goals Weight</td>
+                <td>{{ league.powerplay_goals_weight }}</td>
+                <td><input type="text" name="shorthanded_goals_weight"></td>
             </tr>
             <tr>
-                <th>Shorthanded Points Weight</th>
-                <th>{{ league.shorthanded_points_weight }}</th>
-                <th><input type="text" name="shorthanded_goals_weight"></th>
+                <td>Shorthanded Points Weight</td>
+                <td>{{ league.shorthanded_points_weight }}</td>
+                <td><input type="text" name="shorthanded_goals_weight"></td>
             </tr>
             <tr>
-                <th>+/- Weight</th>
-                <th>{{ league.plus_minus_weight }}</th>
-                <th><input type="text" name="plus_minus_weight"></th>
+                <td>+/- Weight</td>
+                <td>{{ league.plus_minus_weight }}</td>
+                <td><input type="text" name="plus_minus_weight"></td>
             </tr>
             <tr>
-                <th>Penalty Minutes Weight</th>
-                <th>{{ league.penalty_minutes_weight }}</th>
-                <th><input type="text" name="penalty_minutes_weight"></th>
+                <td>Penalty Minutes Weight</td>
+                <td>{{ league.penalty_minutes_weight }}</td>
+                <td><input type="text" name="penalty_minutes_weight"></td>
             </tr>
             <tr>
-                <th>Game Winning Goals Weight</th>
-                <th>{{ league.game_winning_goals_weight }}</th>
-                <th><input type="text" name="game_winning_goals_weight"></th>
+                <td>Game Winning Goals Weight</td>
+                <td>{{ league.game_winning_goals_weight }}</td>
+                <td><input type="text" name="game_winning_goals_weight"></td>
             </tr>
             <tr>
-                <th>Shots on Goal Weight</th>
-                <th>{{ league.shots_on_goal_weight }}</th>
-                <th><input type="text" name="shots_on_goal_weight"></th>
+                <td>Shots on Goal Weight</td>
+                <td>{{ league.shots_on_goal_weight }}</td>
+                <td><input type="text" name="shots_on_goal_weight"></td>
             </tr>
             <tr>
-                <th>Wins Weight</th>
-                <th>{{ league.wins_weight }}</th>
-                <th><input type="text" name="wins_weight"></th>
+                <td>Wins Weight</td>
+                <td>{{ league.wins_weight }}</td>
+                <td><input type="text" name="wins_weight"></td>
             </tr>
             <tr>
-                <th>Losses Weight</th>
-                <th>{{ league.losses_weight }}</th>
-                <th><input type="text" name="losses_weight"></th>
+                <td>Losses Weight</td>
+                <td>{{ league.losses_weight }}</td>
+                <td><input type="text" name="losses_weight"></td>
             </tr>
             <tr>
-                <th>Overtime Losses Weight</th>
-                <th>{{ league.overtime_losses_weight }}</th>
-                <th><input type="text" name="overtime_losses_weight"></th>
+                <td>Overtime Losses Weight</td>
+                <td>{{ league.overtime_losses_weight }}</td>
+                <td><input type="text" name="overtime_losses_weight"></td>
             </tr>
             <tr>
-                <th>Shots Against Weight</th>
-                <th>{{ league.shots_against_weight }}</th>
-                <th><input type="text" name="shots_against_weight"></th>
+                <td>Shots Against Weight</td>
+                <td>{{ league.shots_against_weight }}</td>
+                <td><input type="text" name="shots_against_weight"></td>
             </tr>
             <tr>
-                <th>Saves Weight</th>
-                <th>{{ league.saves_weight }}</th>
-                <th><input type="text" name="saves_weight"></th>
+                <td>Saves Weight</td>
+                <td>{{ league.saves_weight }}</td>
+                <td><input type="text" name="saves_weight"></td>
             </tr>
             <tr>
-                <th>Goals Against Weight</th>
-                <th>{{ league.goals_against_weight }}</th>
-                <th><input type="text" name="goals_against_weight"></th>
+                <td>Goals Against Weight</td>
+                <td>{{ league.goals_against_weight }}</td>
+                <td><input type="text" name="goals_against_weight"></td>
             </tr>
             <tr>
-                <th>Saves Percentage Weight</th>
-                <th>{{ league.saves_percentage_weight }}</th>
-                <th><input type="text" name="saves_percentage_weight"></th>
-            </tr>
-            <!--
-            <tr>
-                <th>Goals Against Average Weight</th>
-                <th>{{ league.goals_against_average_weight }}</th>
-                <th><input type="text" name="goals_against_average_weight"></th>
-            </tr>
-            -->
-            <tr>
-                <th>Shutouts Weight</th>
-                <th>{{ league.shutouts_weight }}</th>
-                <th><input type="text" name="shutouts_weight"></th>
+                <td>Saves Percentage Weight</td>
+                <td>{{ league.saves_percentage_weight }}</td>
+                <td><input type="text" name="saves_percentage_weight"></td>
             </tr>
             <tr>
-                <th>Maximum Number of Players</th>
-                <th>{{ league.maximum_number_of_players }}</th>
-                <th><input type="text" name="maximum_number_of_players"></th>
+                <td>Shutouts Weight</td>
+                <td>{{ league.shutouts_weight }}</td>
+                <td><input type="text" name="shutouts_weight"></td>
+            </tr>
+        </table>
+        <br>
+        <h2>Team Composition</h2>
+        Only integer values will be accepted.
+        <br>
+        <br>
+        <table>
+            <tr>
+                <th><h3>Composition</h3></th>
+                <th><h3>Current Value</h3></th>
+                <th><h3>Changed Value</h3></th>
             </tr>
             <tr>
-                <th>Minimum Number of Goalies</th>
-                <th>{{ league.minimum_number_of_goalies }}</th>
-                <th><input type="text" name="minimum_number_of_goalies"></th>
+                <td>Maximum Number of Players</td>
+                <td>{{ league.maximum_number_of_players }}</td>
+                <td><input type="text" name="maximum_number_of_players"></td>
             </tr>
             <tr>
-                <th>Minimum Number of Defencemen</th>
-                <th>{{ league.minimum_number_of_defencemen }}</th>
-                <th><input type="text" name="minimum_number_of_defencemen"></th>
+                <td>Minimum Number of Goalies</td>
+                <td>{{ league.minimum_number_of_goalies }}</td>
+                <td><input type="text" name="minimum_number_of_goalies"></td>
             </tr>
             <tr>
-                <th>Minimum Number of Right Wing</th>
-                <th>{{ league.minimum_number_of_right_wing }}</th>
-                <th><input type="text" name="minimum_number_of_right_wing"></th>
+                <td>Minimum Number of Defencemen</td>
+                <td>{{ league.minimum_number_of_defencemen }}</td>
+                <td><input type="text" name="minimum_number_of_defencemen"></td>
             </tr>
             <tr>
-                <th>Minimum Number of Left Wing</th>
-                <th>{{ league.minimum_number_of_left_wing }}</th>
-                <th><input type="text" name="minimum_number_of_left_wing"></th>
+                <td>Minimum Number of Right Wing</td>
+                <td>{{ league.minimum_number_of_right_wing }}</td>
+                <td><input type="text" name="minimum_number_of_right_wing"></td>
             </tr>
             <tr>
-                <th>Minimum Number of Center</th>
-                <th>{{ league.minimum_number_of_center }}</th>
-                <th><input type="text" name="minimum_number_of_center"></th>
+                <td>Minimum Number of Left Wing</td>
+                <td>{{ league.minimum_number_of_left_wing }}</td>
+                <td><input type="text" name="minimum_number_of_left_wing"></td>
+            </tr>
+            <tr>
+                <td>Minimum Number of Center</td>
+                <td>{{ league.minimum_number_of_center }}</td>
+                <td><input type="text" name="minimum_number_of_center"></td>
             </tr>
         </table>
         <input type="submit" value="Submit">

@@ -1,3 +1,5 @@
+import decimal
+
 from django.shortcuts import render
 from django.db import connection
 from django.contrib.auth import get_user_model
@@ -58,11 +60,11 @@ def create_league(request):
         return render(request, 'fantasy/display_message.html', {'message': 'Please enter a name and an invite code'})
     else:
         u_id = request.user.id
-        u_id = get_user_model().objects.get(id=u_id)
+        u_id = get_object_or_404(get_user_model(), pk=u_id)
         if not LeagueCommissioner.objects.filter(userid=u_id).exists():
             commissioner = LeagueCommissioner.objects.create(userid=u_id)
         else:
-            commissioner = LeagueCommissioner.objects.get(userid=u_id)
+            commissioner = get_object_or_404(LeagueCommissioner, pk=u_id)
 
         league = FantasyLeague.objects.create(fantasy_league_name=n, fantasy_league_invite_code=c, commissionerid=commissioner)
         return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league \"' + n + '\" was sucessfully created'})
@@ -73,8 +75,8 @@ def view_fantasy_league_invite_code(request):
     if not LeagueCommissioner.objects.filter(userid=u_id).exists():
         return render(request, 'fantasy/display_message.html', {'message': 'You are currently not a league commisioner'})
     else:
-        commisioner = LeagueCommissioner.objects.get(userid=u_id)
-        leagues = FantasyLeague.objects.filter(commissionerid=commisioner)
+        commissioner = get_object_or_404(LeagueCommissioner, pk=u_id)
+        leagues = FantasyLeague.objects.filter(commissionerid=commissioner)
         return render(request, 'fantasy/view_fantasy_league_invite_code.html', {'query_results': leagues})
 
 
@@ -90,8 +92,8 @@ def join_league(request):
 
     # check if user is already participating in the league
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
-    league = FantasyLeague.objects.get(fantasy_league_invite_code=c)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
+    league = get_object_or_404(FantasyLeague, fantasy_league_invite_code=c)
     if Participates.objects.filter(userid=u_id).filter(fantasy_league_name=league).exists():
         return render(request, 'fantasy/display_message.html', {'message': 'You are already participating in this fantasy league'})
 
@@ -101,7 +103,7 @@ def join_league(request):
 
 def create_fantasy_team_show_leagues(request):
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
     # get fantasy leagues where the user doesn't have a fantasy team
     teams = FantasyTeam.objects.filter(userid=u_id).values_list('fantasy_league_name', flat=True)
     leagues = Participates.objects.filter(userid=u_id).exclude(fantasy_league_name__in=teams)
@@ -122,8 +124,8 @@ def create_team(request, league_name):
     if not FantasyTeam.objects.filter(fantasy_team_name=n, fantasy_league_name=league_name).exists():
         # create the fantasy team
         u_id = request.user.id
-        u_id = get_user_model().objects.get(id=u_id)
-        league = FantasyLeague.objects.get(fantasy_league_name=league_name)
+        u_id = get_object_or_404(get_user_model(), pk=u_id)
+        league = get_object_or_404(FantasyLeague, fantasy_league_name=league_name)
         ft = FantasyTeam.objects.create(fantasy_team_name=n, fantasy_league_name=league, userid=u_id)
 
         # populate with randomly selected goalies
@@ -163,7 +165,7 @@ def create_team(request, league_name):
 
 def edit_fantasy_teams(request):
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
     teams = FantasyTeam.objects.filter(userid=u_id)
     return render(request, 'fantasy/edit_fantasy_teams.html', {'teams': teams})
 
@@ -174,7 +176,7 @@ def select_action(request, team_id):
 
 
 def add_goalie(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     max_players = team.fantasy_league_name.maximum_number_of_players
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
@@ -186,7 +188,7 @@ def add_goalie(request, team_id):
 
 
 def add_center(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     max_players = team.fantasy_league_name.maximum_number_of_players
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
@@ -198,7 +200,7 @@ def add_center(request, team_id):
 
 
 def add_left_wing(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     max_players = team.fantasy_league_name.maximum_number_of_players
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
@@ -210,7 +212,7 @@ def add_left_wing(request, team_id):
 
 
 def add_right_wing(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     max_players = team.fantasy_league_name.maximum_number_of_players
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
@@ -222,7 +224,7 @@ def add_right_wing(request, team_id):
 
 
 def add_defencemen(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     max_players = team.fantasy_league_name.maximum_number_of_players
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
@@ -234,13 +236,13 @@ def add_defencemen(request, team_id):
 
 
 def add(request, team_id, nhl_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
-        goalie = NhlGoalies.objects.get(pk=nhl_id)
+        goalie = get_object_or_404(NhlGoalies, pk=nhl_id)
         GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
         return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully added to the team'})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
-        skater = NhlSkaters.objects.get(pk=nhl_id)
+        skater = get_object_or_404(NhlSkaters, pk=nhl_id)
         SkaterTeams.objects.create(playerid=skater.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
         return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully added to the team'})
     else:
@@ -248,7 +250,7 @@ def add(request, team_id, nhl_id):
 
 
 def remove_goalie(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     min_goalies = team.fantasy_league_name.minimum_number_of_goalies
     count = GoalieTeams.objects.filter(team_id=team.id).count()
     if min_goalies >= count:
@@ -259,7 +261,7 @@ def remove_goalie(request, team_id):
 
 
 def remove_center(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     min_center = team.fantasy_league_name.minimum_number_of_center
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     centers = NhlSkaters.objects.filter(id__in=skaters, center_flag=1)
@@ -269,7 +271,7 @@ def remove_center(request, team_id):
 
 
 def remove_left_wing(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     min_left = team.fantasy_league_name.minimum_number_of_left_wing
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     lefts = NhlSkaters.objects.filter(id__in=skaters, left_wing_flag=1)
@@ -279,7 +281,7 @@ def remove_left_wing(request, team_id):
 
 
 def remove_right_wing(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     min_right = team.fantasy_league_name.minimum_number_of_center
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     rights = NhlSkaters.objects.filter(id__in=skaters, right_wing_flag=1)
@@ -289,7 +291,7 @@ def remove_right_wing(request, team_id):
 
 
 def remove_defencemen(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     min_def = team.fantasy_league_name.minimum_number_of_defencemen
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     defences = NhlSkaters.objects.filter(id__in=skaters, defencemen_flag=1)
@@ -299,13 +301,13 @@ def remove_defencemen(request, team_id):
 
 
 def remove(request, team_id, nhl_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
-        goalie = NhlPlayers.objects.get(pk=nhl_id)
+        goalie = get_object_or_404(NhlPlayers, pk=nhl_id)
         GoalieTeams.objects.get(playerid=goalie, team_id=team).delete()
         return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully removed from the team'})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
-        skater = NhlPlayers.objects.get(pk=nhl_id)
+        skater = get_object_or_404(NhlPlayers, pk=nhl_id)
         SkaterTeams.objects.get(playerid=skater, team_id=team).delete()
         return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully removed from the team'})
     else:
@@ -314,7 +316,7 @@ def remove(request, team_id, nhl_id):
 
 def view_fantasy_teams(request):
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
     teams = FantasyTeam.objects.filter(userid=u_id)
     return render(request, 'fantasy/view_fantasy_teams.html', {'teams': teams})
 
@@ -329,26 +331,27 @@ def view_fantasy_team_players(request, teamid):
 
 def view_fantasy_leagues(request):
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
     league_names = Participates.objects.filter(userid=u_id).values_list('fantasy_league_name', flat=True)
     leagues = FantasyLeague.objects.filter(fantasy_league_name__in=league_names)
     return render(request, 'fantasy/view_fantasy_leagues.html', {'leagues': leagues})
 
 
 def view_fantasy_league_teams(request, f_name):
+    league = get_object_or_404(FantasyLeague, pk=f_name)
     teams = FantasyTeam.objects.select_related('userid').filter(fantasy_league_name=f_name)
-    return render(request, 'fantasy/view_fantasy_league_teams.html', {'teams': teams})
+    return render(request, 'fantasy/view_fantasy_league_teams.html', {'teams': teams, 'league': league})
 
 
 def edit_fantasy_league_rules(request):
     u_id = request.user.id
-    u_id = get_user_model().objects.get(id=u_id)
+    u_id = get_object_or_404(get_user_model(), pk=u_id)
     # check if the user is a commisioner (has leagues)
     if not LeagueCommissioner.objects.filter(userid=u_id).exists():
         return render(request, 'fantasy/display_message.html', {'message': 'You have no leagues to edit'})
     else:
         # get leagues where the user can edit the rules (no current teams in the league)
-        commissioner = LeagueCommissioner.objects.get(pk=u_id)
+        commissioner = get_object_or_404(LeagueCommissioner, pk=u_id)
         leagues = FantasyLeague.objects.filter(commissionerid=commissioner)
         par = Participates.objects.filter(fantasy_league_name__in=leagues).values_list('fantasy_league_name', flat=True)
         edit_leagues = leagues.exclude(fantasy_league_name__in=par)
@@ -359,14 +362,14 @@ def edit_fantasy_league_rules(request):
 
 
 def edit_league_rules(request, league_name):
-    league = FantasyLeague.objects.get(pk=league_name)
+    league = get_object_or_404(FantasyLeague, pk=league_name)
     return render(request, 'fantasy/edit_league_rules.html', {'league': league})
 
 
 def update_rules(request, league_name):
-    league = FantasyLeague.objects.get(pk=league_name)
+    league = get_object_or_404(FantasyLeague, pk=league_name)
 
-    goals_weight = request.GET.get('goals_weight').strip()
+    goals_weight = request.POST['goals_weight'].strip()
     if goals_weight == '':
         pass
     else:
@@ -375,7 +378,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    assists_weight = request.GET.get('assists_weight').strip()
+    assists_weight = request.POST['assists_weight'].strip()
     if assists_weight == '':
         pass
     else:
@@ -384,7 +387,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    powerplay_goals_weight = request.GET.get('powerplay_goals_weight').strip()
+    powerplay_goals_weight = request.POST['powerplay_goals_weight'].strip()
     if powerplay_goals_weight == '':
         pass
     else:
@@ -393,7 +396,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    powerplay_points_weight = request.GET.get('powerplay_points_weight').strip()
+    powerplay_points_weight = request.POST['powerplay_points_weight'].strip()
     if powerplay_points_weight == '':
         pass
     else:
@@ -402,7 +405,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    shorthanded_goals_weight = request.GET.get('shorthanded_goals_weight').strip()
+    shorthanded_goals_weight = request.POST['shorthanded_goals_weight'].strip()
     if shorthanded_goals_weight == '':
         pass
     else:
@@ -411,7 +414,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    plus_minus_weight = request.GET.get('plus_minus_weight').strip()
+    plus_minus_weight = request.POST['plus_minus_weight'].strip()
     if plus_minus_weight == '':
         pass
     else:
@@ -420,7 +423,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    penalty_minutes_weight = request.GET.get('penalty_minutes_weight').strip()
+    penalty_minutes_weight = request.POST['penalty_minutes_weight'].strip()
     if penalty_minutes_weight == '':
         pass
     else:
@@ -429,7 +432,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    game_winning_goals_weight = request.GET.get('game_winning_goals_weight').strip()
+    game_winning_goals_weight = request.POST['game_winning_goals_weight'].strip()
     if game_winning_goals_weight == '':
         pass
     else:
@@ -438,7 +441,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    shots_on_goal_weight = request.GET.get('shots_on_goal_weight').strip()
+    shots_on_goal_weight = request.POST['shots_on_goal_weight'].strip()
     if shots_on_goal_weight == '':
         pass
     else:
@@ -447,7 +450,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    wins_weight = request.GET.get('wins_weight').strip()
+    wins_weight = request.POST['wins_weight'].strip()
     if wins_weight == '':
         pass
     else:
@@ -456,7 +459,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    losses_weight = request.GET.get('losses_weight').strip()
+    losses_weight = request.POST['losses_weight'].strip()
     if losses_weight == '':
         pass
     else:
@@ -465,7 +468,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    overtime_losses_weight = request.GET.get('overtime_losses_weight').strip()
+    overtime_losses_weight = request.POST['overtime_losses_weight'].strip()
     if overtime_losses_weight == '':
         pass
     else:
@@ -474,7 +477,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    shots_against_weight = request.GET.get('shots_against_weight').strip()
+    shots_against_weight = request.POST['shots_against_weight'].strip()
     if shots_against_weight == '':
         pass
     else:
@@ -483,7 +486,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    saves_weight = request.GET.get('saves_weight').strip()
+    saves_weight = request.POST['saves_weight'].strip()
     if saves_weight == '':
         pass
     else:
@@ -492,7 +495,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    goals_against_weight = request.GET.get('goals_against_weight').strip()
+    goals_against_weight = request.POST['goals_against_weight'].strip()
     if goals_against_weight == '':
         pass
     else:
@@ -501,7 +504,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    saves_percentage_weight = request.GET.get('saves_percentage_weight').strip()
+    saves_percentage_weight = request.POST['saves_percentage_weight'].strip()
     if saves_percentage_weight == '':
         pass
     else:
@@ -510,16 +513,7 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    #goals_against_average_weight = request.GET.get('goals_against_average_weight').strip()
-    #if goals_against_average_weight == '':
-    #    pass
-    #else:
-    #    try:
-    #        league.goals_against_average_weight = float(goals_against_average_weight)
-    #    except ValueError:
-    #        pass
-
-    shutouts_weight = request.GET.get('shutouts_weight').strip()
+    shutouts_weight = request.POST['shutouts_weight'].strip()
     if shutouts_weight == '':
         pass
     else:
@@ -528,7 +522,12 @@ def update_rules(request, league_name):
         except ValueError:
             pass
 
-    maximum_number_of_players = request.GET.get('maximum_number_of_players').strip()
+    # calculate maximum number of players and minimum number of players
+    # ensure max is never smaller than min
+    min_players = 0
+    max_players = 0
+
+    maximum_number_of_players = request.POST['maximum_number_of_players'].strip()
     if maximum_number_of_players == '':
         pass
     else:
@@ -536,8 +535,9 @@ def update_rules(request, league_name):
             league.maximum_number_of_players = int(maximum_number_of_players)
         except ValueError:
             pass
+    max_players = league.maximum_number_of_players
 
-    minimum_number_of_goalies = request.GET.get('minimum_number_of_goalies').strip()
+    minimum_number_of_goalies = request.POST['minimum_number_of_goalies'].strip()
     if minimum_number_of_goalies == '':
         pass
     else:
@@ -545,8 +545,9 @@ def update_rules(request, league_name):
             league.minimum_number_of_goalies = int(minimum_number_of_goalies)
         except ValueError:
             pass
+    min_players += league.minimum_number_of_goalies
 
-    minimum_number_of_defencemen = request.GET.get('minimum_number_of_defencemen').strip()
+    minimum_number_of_defencemen = request.POST['minimum_number_of_defencemen'].strip()
     if minimum_number_of_defencemen == '':
         pass
     else:
@@ -554,8 +555,9 @@ def update_rules(request, league_name):
             league.minimum_number_of_defencemen = int(minimum_number_of_defencemen)
         except ValueError:
             pass
+    min_players += league.minimum_number_of_defencemen
 
-    minimum_number_of_right_wing = request.GET.get('minimum_number_of_right_wing').strip()
+    minimum_number_of_right_wing = request.POST['minimum_number_of_right_wing'].strip()
     if minimum_number_of_right_wing == '':
         pass
     else:
@@ -563,8 +565,9 @@ def update_rules(request, league_name):
             league.minimum_number_of_right_wing = int(minimum_number_of_right_wing)
         except ValueError:
             pass
+    min_players += league.minimum_number_of_right_wing
 
-    minimum_number_of_left_wing = request.GET.get('minimum_number_of_left_wing').strip()
+    minimum_number_of_left_wing = request.POST['minimum_number_of_left_wing'].strip()
     if minimum_number_of_left_wing == '':
         pass
     else:
@@ -572,15 +575,26 @@ def update_rules(request, league_name):
             league.minimum_number_of_left_wing = int(minimum_number_of_left_wing)
         except ValueError:
             pass
+    min_players += league.minimum_number_of_left_wing
 
-    minimum_number_of_center = request.GET.get('minimum_number_of_center').strip()
+    minimum_number_of_center = request.POST['minimum_number_of_center'].strip()
     if minimum_number_of_center == '':
         pass
     else:
         try:
             league.minimum_number_of_center = int(minimum_number_of_center)
+            min_players += int(minimum_number_of_center)
         except ValueError:
             pass
+    min_players += league.minimum_number_of_center
 
-    league.save()
-    return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully made changes to league rules'})
+    if min_players > max_players:
+        return render(request, 'fantasy/display_message.html', {'message': 'Maximum number of players must be equal to or exceed total of minimum number of players, changes were not made'})
+    elif max_players == 0:
+        return render(request, 'fantasy/display_message.html', {'message': 'Maximum number of players must be greater than zero, changes were not made'})
+    else:
+        try:
+            league.save()
+        except decimal.InvalidOperation:
+            return render(request, 'fantasy/display_message.html', {'message': 'Invalid decimal value was provided, changes were not made'})
+        return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully made changes to league rules'})
