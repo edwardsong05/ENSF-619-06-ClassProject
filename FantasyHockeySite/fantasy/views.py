@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from django.db import connection
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -32,10 +31,10 @@ def search_player(request):
     jn = request.GET.get('jersey_number').strip()
     n = request.GET.get('name').strip()
     if tn == '' and jn == '' and n == '':
-        return HttpResponse("Please enter some parameters")
+        return render(request, 'fantasy/display_message.html', {'message': 'No parameters entered, search was not performed'})
     teams = NhlTeam.objects.filter(team_name__icontains=tn)
-    skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
-    goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number__icontains=jn, id__name__icontains=n)
+    skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
+    goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
     return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
@@ -48,11 +47,11 @@ def create_league(request):
     c = request.GET.get('code')
     # check for unique name and code
     if FantasyLeague.objects.filter(fantasy_league_name=n).exists():
-        return HttpResponse('League Name ' + n + ' already exists')
+        return render(request, 'fantasy/display_message.html', {'message': 'League name \"' + n + '\" already exists'})
     elif FantasyLeague.objects.filter(fantasy_league_invite_code=c):
-        return HttpResponse('Duplicate invite code')
-    elif n == '' and c == '':
-        return HttpResponse('Please enter a name and an invite code')
+        return render(request, 'fantasy/display_message.html', {'message': 'Invite code \"' + c + '\" already exists'})
+    elif n == '' or c == '':
+        return render(request, 'fantasy/display_message.html', {'message': 'Please enter a name and an invite code'})
     else:
         u_id = request.user.id
         u_id = get_user_model().objects.get(id=u_id)
@@ -62,13 +61,13 @@ def create_league(request):
             commissioner = LeagueCommissioner.objects.get(userid=u_id)
 
         league = FantasyLeague.objects.create(fantasy_league_name=n, fantasy_league_invite_code=c, commissionerid=commissioner)
-        return HttpResponse('Fantasy League ' + n + ' created')
+        return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league \"' + n + '\" was sucessfully created'})
 
 
 def view_fantasy_league_invite_code(request):
     u_id = request.user.id
     if not LeagueCommissioner.objects.filter(userid=u_id).exists():
-        return HttpResponse("You are not a League commisioner")
+        return render(request, 'fantasy/display_message.html', {'message': 'You are currently not a league commisioner'})
     else:
         commisioner = LeagueCommissioner.objects.get(userid=u_id)
         leagues = FantasyLeague.objects.filter(commissionerid=commisioner)
@@ -83,17 +82,17 @@ def join_league(request):
     c = request.GET.get('code')
     # check for valid code
     if not FantasyLeague.objects.filter(fantasy_league_invite_code=c).exists():
-        return HttpResponse('Fantasy League does not exist')
+        return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league with invite code \"' + c + '\" does not exist'})
 
     # check if user is already participating in the league
     u_id = request.user.id
     u_id = get_user_model().objects.get(id=u_id)
     league = FantasyLeague.objects.get(fantasy_league_invite_code=c)
     if Participates.objects.filter(userid=u_id).filter(fantasy_league_name=league).exists():
-        return HttpResponse('You are already participating in this fantasy league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You are already participating in this fantasy league'})
 
     p = Participates.objects.create(userid=u_id, fantasy_league_name=league)
-    return HttpResponse('Sucessfully joined Fantasy League')
+    return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully joined fantasy league \"' + league.fantasy_league_name + '\"'})
 
 
 def create_fantasy_team_show_leagues(request):
@@ -104,7 +103,7 @@ def create_fantasy_team_show_leagues(request):
     leagues = Participates.objects.filter(userid=u_id).exclude(fantasy_league_name__in=teams)
 
     if not leagues.exists():
-        return HttpResponse('You have no available teams to create')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have no available teams to create'})
     else:
         return render(request, 'fantasy/create_fantasy_team_show_leagues.html', {'query_results': leagues})
 
@@ -153,9 +152,9 @@ def create_team(request, league_name):
         for item in temp:
             SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
 
-        return HttpResponse('Sucessfully created fantasy team: \"' + n + '\" with randomly selected players')
+        return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully created fantasy team \"' + n  + '\" with randomly selected players'})
     else:
-        return HttpResponse('The team name:\"' + n + '\" already exists within the league, team was not created')
+        return render(request, 'fantasy/display_message.html', {'message': 'Team name \"' + n  + '\" already exists within the league, team was not created'})
 
 
 def edit_fantasy_teams(request):
@@ -176,7 +175,7 @@ def add_goalie(request, team_id):
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
     if max_players <= count:
-        return HttpResponse('You have reached the maximum allowable number of players for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_goalies = NhlGoalies.objects.all().exclude(id__in=current_goalies)
     return render(request, 'fantasy/add_goalie.html', {'team': team, 'available_goalies': available_goalies})
@@ -188,7 +187,7 @@ def add_center(request, team_id):
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
     if max_players <= count:
-        return HttpResponse('You have reached the maximum allowable number of players for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(center_flag=1).exclude(id__in=current_skaters)
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
@@ -200,7 +199,7 @@ def add_left_wing(request, team_id):
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
     if max_players <= count:
-        return HttpResponse('You have reached the maximum allowable number of players for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(left_wing_flag=1).exclude(id__in=current_skaters)
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
@@ -212,7 +211,7 @@ def add_right_wing(request, team_id):
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
     if max_players <= count:
-        return HttpResponse('You have reached the maximum allowable number of players for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(right_wing_flag=1).exclude(id__in=current_skaters)
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
@@ -224,7 +223,7 @@ def add_defencemen(request, team_id):
     count = SkaterTeams.objects.filter(team_id=team.id).count()
     count += GoalieTeams.objects.filter(team_id=team.id).count()
     if max_players <= count:
-        return HttpResponse('You have reached the maximum allowable number of players for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(defencemen_flag=1).exclude(id__in=current_skaters)
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
@@ -235,13 +234,13 @@ def add(request, team_id, nhl_id):
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
         goalie = NhlGoalies.objects.get(pk=nhl_id)
         GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
-        return HttpResponse('Goalie was sucessfully added to the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully added to the team'})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = NhlSkaters.objects.get(pk=nhl_id)
         SkaterTeams.objects.create(playerid=skater.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
-        return HttpResponse('Skater was sucessfully added to the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully added to the team'})
     else:
-        return HttpResponse('An error has occured: player was not inserted into the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not added to the team'})
 
 
 def remove_goalie(request, team_id):
@@ -249,7 +248,7 @@ def remove_goalie(request, team_id):
     min_goalies = team.fantasy_league_name.minimum_number_of_goalies
     count = GoalieTeams.objects.filter(team_id=team.id).count()
     if min_goalies >= count:
-        return HttpResponse('You have reached the minimum allowable number of goalies for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_goalies) + ') allowable number of goalies for this league'})
     current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     goalies = NhlGoalies.objects.filter(id__in=current_goalies)
     return render(request, 'fantasy/remove_goalie.html', {'team': team, 'goalies': goalies})
@@ -261,7 +260,7 @@ def remove_center(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     centers = NhlSkaters.objects.filter(id__in=skaters, center_flag=1)
     if min_center >= centers.count():
-        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_center) + ') allowable number of centers for this league'})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': centers})
 
 
@@ -271,7 +270,7 @@ def remove_left_wing(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     lefts = NhlSkaters.objects.filter(id__in=skaters, left_wing_flag=1)
     if min_left >= lefts.count():
-        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_left) + ') allowable number of left wings for this league'})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': lefts})
 
 
@@ -281,7 +280,7 @@ def remove_right_wing(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     rights = NhlSkaters.objects.filter(id__in=skaters, right_wing_flag=1)
     if min_right >= rights.count():
-        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_right) + ') allowable number of right wings for this league'})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': rights})
 
 
@@ -291,7 +290,7 @@ def remove_defencemen(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     defences = NhlSkaters.objects.filter(id__in=skaters, defencemen_flag=1)
     if min_def >= defences.count():
-        return HttpResponse('You have reached the minimum allowable number of centers for this league')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_def) + ') allowable number of defencemen for this league'})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': defences})
 
 
@@ -300,13 +299,13 @@ def remove(request, team_id, nhl_id):
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
         goalie = NhlPlayers.objects.get(pk=nhl_id)
         GoalieTeams.objects.get(playerid=goalie, team_id=team).delete()
-        return HttpResponse('Sucessfully removed from the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully removed from the team'})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = NhlPlayers.objects.get(pk=nhl_id)
         SkaterTeams.objects.get(playerid=skater, team_id=team).delete()
-        return HttpResponse('Sucessfully removed from the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully removed from the team'})
     else:
-        return HttpResponse('An error has occured: player was not removed from the team')
+        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not removed from the team'})
 
 
 def view_fantasy_teams(request):
@@ -342,7 +341,7 @@ def edit_fantasy_league_rules(request):
     u_id = get_user_model().objects.get(id=u_id)
     # check if the user is a commisioner (has leagues)
     if not LeagueCommissioner.objects.filter(userid=u_id).exists():
-        return HttpResponse('You have no leagues to edit')
+        return render(request, 'fantasy/display_message.html', {'message': 'You have no leagues to edit'})
     else:
         # get leagues where the user can edit the rules (no current teams in the league)
         commissioner = LeagueCommissioner.objects.get(pk=u_id)
@@ -352,7 +351,7 @@ def edit_fantasy_league_rules(request):
         if edit_leagues.exists():
             return render(request, 'fantasy/edit_fantasy_league_rules.html', {'leagues': edit_leagues})
         else:
-            return HttpResponse('All leagues currently have participants, unable to edit leagues which have participants')
+            return render(request, 'fantasy/display_message.html', {'message': 'All leagues currently have participants, unable to edit leagues which have participants'})
 
 
 def edit_league_rules(request, league_name):
@@ -580,4 +579,4 @@ def update_rules(request, league_name):
             pass
 
     league.save()
-    return HttpResponse('Sucessfully made changes to league rules')
+    return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully made changes to league rules'})
