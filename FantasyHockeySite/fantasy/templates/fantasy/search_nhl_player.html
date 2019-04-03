@@ -1,7 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <form action="{% url 'fantasy:search_player' %}" method="get">
+    <form action="{% url 'fantasy:search_player' %}" method="post">
+        {% csrf_token %}
         Team Name:<br> <input type="text" name="team_name">
         <br>
         Jersey Number:<br> <input type="text" name="jersey_number">

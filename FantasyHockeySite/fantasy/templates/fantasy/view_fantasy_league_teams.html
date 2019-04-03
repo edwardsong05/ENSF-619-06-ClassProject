@@ -1,6 +1,7 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+    <h2>Teams In Fantasy League: {{ league.fantasy_league_name }}</h2>
     <table cellspacing="10">
         <style>
             table {
@@ -26,5 +27,117 @@
             <td>{{ item.fantasy_points }}</td>
         </tr>
         {% endfor %}
+    </table>
+    <br>
+    <h2>Fantasy League Points Weight</h2>
+    <table>
+        <tr>
+            <th><h3>Weight</h3></th>
+            <th><h3>Value</h3></th>
+        </tr>
+        <tr>
+            <td>Goals Weight</td>
+            <td>{{ league.goals_weight }}</td>
+        </tr>
+        <tr>
+            <td>Assists Weight</td>
+            <td>{{ league.assists_weight }}</td>
+        </tr>
+        <tr>
+            <td>Powerplay Goals Weight</td>
+            <td>{{ league.powerplay_goals_weight }}</td>
+        </tr>
+        <tr>
+            <td>Powerplay Points Weight</td>
+            <td>{{ league.powerplay_points_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shorthanded Goals Weight</td>
+            <td>{{ league.powerplay_goals_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shorthanded Points Weight</td>
+            <td>{{ league.shorthanded_points_weight }}</td>
+        </tr>
+        <tr>
+            <td>+/- Weight</td>
+            <td>{{ league.plus_minus_weight }}</td>
+        </tr>
+        <tr>
+            <td>Penalty Minutes Weight</td>
+            <td>{{ league.penalty_minutes_weight }}</td>
+        </tr>
+        <tr>
+            <td>Game Winning Goals Weight</td>
+            <td>{{ league.game_winning_goals_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shots on Goal Weight</td>
+            <td>{{ league.shots_on_goal_weight }}</td>
+        </tr>
+        <tr>
+            <td>Wins Weight</td>
+            <td>{{ league.wins_weight }}</td>
+        </tr>
+        <tr>
+            <td>Losses Weight</td>
+            <td>{{ league.losses_weight }}</td>
+        </tr>
+        <tr>
+            <td>Overtime Losses Weight</td>
+            <td>{{ league.overtime_losses_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shots Against Weight</td>
+            <td>{{ league.shots_against_weight }}</td>
+        </tr>
+        <tr>
+            <td>Saves Weight</td>
+            <td>{{ league.saves_weight }}</td>
+        </tr>
+        <tr>
+            <td>Goals Against Weight</td>
+            <td>{{ league.goals_against_weight }}</td>
+        </tr>
+        <tr>
+            <td>Saves Percentage Weight</td>
+            <td>{{ league.saves_percentage_weight }}</td>
+        </tr>
+        <tr>
+            <td>Shutouts Weight</td>
+            <td>{{ league.shutouts_weight }}</td>
+        </tr>
+    </table>
+    <br>
+    <h2>Team Composition</h2>
+    <table>
+        <tr>
+            <th><h3>Composition</h3></th>
+            <th><h3>Value</h3></th>
+        </tr>
+        <tr>
+            <td>Maximum Number of Players</td>
+            <td>{{ league.maximum_number_of_players }}</td>
+        </tr>
+        <tr>
+            <td>Minimum Number of Goalies</td>
+            <td>{{ league.minimum_number_of_goalies }}</td>
+        </tr>
+        <tr>
+            <td>Minimum Number of Defencemen</td>
+            <td>{{ league.minimum_number_of_defencemen }}</td>
+        </tr>
+        <tr>
+            <td>Minimum Number of Right Wing</td>
+            <td>{{ league.minimum_number_of_right_wing }}</td>
+        </tr>
+        <tr>
+            <td>Minimum Number of Left Wing</td>
+            <td>{{ league.minimum_number_of_left_wing }}</td>
+        </tr>
+        <tr>
+            <td>Minimum Number of Center</td>
+            <td>{{ league.minimum_number_of_center }}</td>
+        </tr>
     </table>
 {% endblock %}

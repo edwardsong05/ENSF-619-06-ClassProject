@@ -1,7 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <form action="{% url 'fantasy:create_league' %}" method="get">
+    <form action="{% url 'fantasy:create_league' %}" method="post">
+        {% csrf_token %}
         Fatnasy League Name:<br> <input type="text" name="name">
         <br>
         Invite Code:<br> <input type="text" name="code">

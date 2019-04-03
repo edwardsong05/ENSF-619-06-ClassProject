@@ -12,7 +12,7 @@ class Command(BaseCommand):
     numUsers = 20
     numLeagues = 10
     numLeagueParticipants=10
-    
+
     def handle(self, *args, ** options):
         GoalieTeams.objects.all().delete()
         SkaterTeams.objects.all().delete()
@@ -24,33 +24,31 @@ class Command(BaseCommand):
         self.createUsers()
         self.createLeagues()
         self.insertPlayers()
-    
+
     def insertGoalie(self, playerIds, goalies, league, team):
         while True:
             goalie = goalies[random.randint(0,len(goalies)-1)]
             if goalie.id.id in playerIds:
                     continue
             print("Added to team ", team.fantasy_team_name, ": goalie", goalie.id.id)
-            goalieobj = GoalieTeams.objects.create(fantasy_league_name=league,
-                                                   team_id=team,
-                                                   playerid=goalie.id)
+            #goalieobj = GoalieTeams.objects.create(fantasy_league_name=league, team_id=team, playerid=goalie.id)
+            goalieobj = GoalieTeams.objects.create(team_id=team, playerid=goalie.id)
             goalieobj.save()
             playerIds.append(goalie.id.id)
             break
-        
+
     def insertSkater(self, playerIds, skaters, league, team):
         while True:
             skater = skaters[random.randint(0,len(skaters)-1)]
             if skater.id.id in playerIds:
                 continue
             print("Added to team", team.fantasy_team_name, ": skater", skater.id.id)
-            skaterobj = SkaterTeams.objects.create(fantasy_league_name=league,
-                                           team_id=team,
-                                           playerid=skater.id)
+            #skaterobj = SkaterTeams.objects.create(fantasy_league_name=league, team_id=team, playerid=skater.id)
+            skaterobj = SkaterTeams.objects.create(team_id=team, playerid=skater.id)
             skaterobj.save()
             playerIds.append(skater.id.id)
             break
-    
+
     def insertPlayers(self):
         goalies = NhlGoalies.objects.all()
         skaters = NhlSkaters.objects.all()
@@ -58,7 +56,7 @@ class Command(BaseCommand):
         rights = NhlSkaters.objects.filter(right_wing_flag=1)
         lefts = NhlSkaters.objects.filter(left_wing_flag=1)
         centers = NhlSkaters.objects.filter(center_flag=1)
-        
+
         for league in FantasyLeague.objects.all():
             maxPlayers = league.maximum_number_of_players
             minGoalies = league.minimum_number_of_goalies
@@ -68,23 +66,23 @@ class Command(BaseCommand):
             minCenter = league.minimum_number_of_center
             for team in FantasyTeam.objects.filter(fantasy_league_name=league.fantasy_league_name):
                 playerIds = []
-                
+
                 #add the minimums for each team
                 for i in range(minGoalies):
                     self.insertGoalie(playerIds, goalies, league, team)
-                    
+
                 for i in range(minDef):
                     self.insertSkater(playerIds, defences, league, team)
-                    
+
                 for i in range(minRight):
                     self.insertSkater(playerIds, rights, league, team)
-                
+
                 for i in range(minLeft):
                     self.insertSkater(playerIds, lefts, league, team)
-                    
+
                 for i in range(minCenter):
                     self.insertSkater(playerIds, centers, league, team)
-                
+
                 #fill the remaining team members
                 for i in range(maxPlayers-minGoalies-minDef-minRight-minLeft-minCenter):
                     #insert skaters to goalies at a 10:1 ratio
@@ -92,7 +90,7 @@ class Command(BaseCommand):
                         self.insertGoalie(playerIds, goalies, league, team)
                     else:
                         self.insertSkater(playerIds, skaters, league, team)
-    
+
     def createUsers(self):
         usernames = []
         for i in range(self.numUsers):
@@ -112,10 +110,10 @@ class Command(BaseCommand):
                 break
             usernames.append(username)
             print("Added user:", username)
-            
+
     def genRandomNum(self):
         return random.random()*2-1
-    
+
     def genFunName(self):
         #A fun random name for teams and leagues
         ##random words from https://github.com/classam/silly/blob/master/silly/main.py
@@ -131,14 +129,14 @@ class Command(BaseCommand):
         name1 = adjectives[random.randint(0,len(adjectives)-1)].capitalize()
         name2 = nouns[random.randint(0,len(nouns)-1)].capitalize()
         return name1 + " " + name2
-    
+
     def createLeagues(self):
         leaguenames = []
         usernames = [user.username for user in get_user_model().objects.all()]
         for i in range(self.numLeagues):
             while True:
                 comExists = False
-                
+
                 leaguename = self.genFunName()
                 if leaguename in leaguenames:
                     continue
@@ -168,7 +166,6 @@ class Command(BaseCommand):
                         saves_weight = self.genRandomNum(),
                         goals_against_weight = self.genRandomNum(),
                         saves_percentage_weight = self.genRandomNum(),
-                        goals_against_average_weight = self.genRandomNum(),
                         shutouts_weight = self.genRandomNum(),
                         maximum_number_of_players = random.randrange(30,50),
                         minimum_number_of_goalies = random.randrange(1,5),
@@ -186,11 +183,11 @@ class Command(BaseCommand):
                 participate.save()
                 leaguenames.append(leaguename)
                 print("\nAdded league:", leaguename)
-                
+
                 #insert people into the league
                 leagueusernames = []
                 leagueusernames.append(cusername)
-                
+
                 teamnames = []
                 #team names should not be the same as the leaguename
                 teamnames.append(leaguename)
@@ -205,7 +202,7 @@ class Command(BaseCommand):
                         participate.save()
                         leagueusernames.append(pusername)
                         print("Added user:", pusername, "to league:", leaguename)
-                        
+
                         while True:
                             teamname = self.genFunName()
                             if teamname in teamnames:
