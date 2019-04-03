@@ -27,14 +27,18 @@ def search_nhl_player(request):
 
 
 def search_player(request):
-    tn = request.GET.get('team_name').strip()
-    jn = request.GET.get('jersey_number').strip()
-    n = request.GET.get('name').strip()
+    tn = request.POST['team_name'].strip()
+    jn = request.POST['jersey_number'].strip()
+    n = request.POST['name'].strip()
     if tn == '' and jn == '' and n == '':
         return render(request, 'fantasy/display_message.html', {'message': 'No parameters entered, search was not performed'})
     teams = NhlTeam.objects.filter(team_name__icontains=tn)
-    skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
-    goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
+    if jn == '':
+        skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__name__icontains=n)
+        goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__name__icontains=n)
+    else:
+        skaters = NhlSkaters.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
+        goalies = NhlGoalies.objects.select_related('id').filter(id__team_name__in=teams, id__jersey_number=jn, id__name__icontains=n)
     return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
@@ -43,8 +47,8 @@ def create_fantasy_league(request):
 
 
 def create_league(request):
-    n = request.GET.get('name').strip()
-    c = request.GET.get('code')
+    n = request.POST['name'].strip()
+    c = request.POST['code']
     # check for unique name and code
     if FantasyLeague.objects.filter(fantasy_league_name=n).exists():
         return render(request, 'fantasy/display_message.html', {'message': 'League name \"' + n + '\" already exists'})
@@ -79,7 +83,7 @@ def join_fantasy_league(request):
 
 
 def join_league(request):
-    c = request.GET.get('code')
+    c = request.POST['code']
     # check for valid code
     if not FantasyLeague.objects.filter(fantasy_league_invite_code=c).exists():
         return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league with invite code \"' + c + '\" does not exist'})
@@ -114,7 +118,7 @@ def create_fantasy_team(request, league_name):
 
 
 def create_team(request, league_name):
-    n = request.GET.get('name')
+    n = request.POST['name']
     if not FantasyTeam.objects.filter(fantasy_team_name=n, fantasy_league_name=league_name).exists():
         # create the fantasy team
         u_id = request.user.id
