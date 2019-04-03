@@ -1,20 +1,31 @@
 {% load static %}
 <html>
-    <head>
-        <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    </head>
-    <body>
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+
+<body>
+    {% if user.is_authenticated %}
         <div class="header">
-            <h1><a href="{% url 'home' %}">Home</a></h1>
+            <h1>ENSF 619 Databases Project</h1>
             <div style="display: inline-block">
                 <a href="{% url 'fantasy:index' %}">Fantasy Hockey</a>
                 &nbsp
                 <a href="{% url 'logout' %}">Logout</a>
             </div>
         </div>
+    
         <div class="content-container">
             {% block content %}
             {% endblock %}
         </div>
-    </body>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">login</a> |
+        <a href="{% url 'signup' %}">signup</a>
+    {% endif %}
+
+</body>
+
 </html>

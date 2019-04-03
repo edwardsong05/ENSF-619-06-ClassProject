@@ -20,7 +20,7 @@ from fantasy import views
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', views.index, name='index'),
     path('fantasy/', include('fantasy.urls', namespace='fantasy')),
     path('admin/', admin.site.urls),
     re_path('api/(?P<version>(v1|v2))/', include('apis.urls')),
