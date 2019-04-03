@@ -1,4 +1,5 @@
-**/secrets.json
-**/migrations/*
+﻿**/secrets.json
+**/migrations/
 *.pyc
+*.pyc.*
 !**/migrations/__init__.py

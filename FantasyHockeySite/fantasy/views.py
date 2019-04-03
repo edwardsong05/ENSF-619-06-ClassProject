@@ -190,6 +190,11 @@ def add_goalie(request, team_id):
         return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_goalies = NhlGoalies.objects.all().exclude(id__in=current_goalies)
+    order_by = request.GET.get('order_by', 'defaultOrderField')
+    if order_by=='team_name' or order_by=='defaultOrderField':
+        available_goalies = available_goalies.order_by('id__team_name', 'id__name')
+    elif order_by=='name':
+        available_goalies = available_goalies.order_by('id__name', 'id__team_name')
     return render(request, 'fantasy/add_goalie.html', {'team': team, 'available_goalies': available_goalies})
 
 
@@ -202,6 +207,11 @@ def add_center(request, team_id):
         return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(center_flag=1).exclude(id__in=current_skaters)
+    order_by = request.GET.get('order_by', 'defaultOrderField')
+    if order_by=='team_name' or order_by=='defaultOrderField':
+        available_skaters = available_skaters.order_by('id__team_name', 'id__name')
+    elif order_by=='name':
+        available_skaters = available_skaters.order_by('id__name', 'id__team_name')
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
 
 
@@ -214,6 +224,11 @@ def add_left_wing(request, team_id):
         return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(left_wing_flag=1).exclude(id__in=current_skaters)
+    order_by = request.GET.get('order_by', 'defaultOrderField')
+    if order_by=='team_name' or order_by=='defaultOrderField':
+        available_skaters = available_skaters.order_by('id__team_name', 'id__name')
+    elif order_by=='name':
+        available_skaters = available_skaters.order_by('id__name', 'id__team_name')
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
 
 
@@ -226,6 +241,11 @@ def add_right_wing(request, team_id):
         return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(right_wing_flag=1).exclude(id__in=current_skaters)
+    order_by = request.GET.get('order_by', 'defaultOrderField')
+    if order_by=='team_name' or order_by=='defaultOrderField':
+        available_skaters = available_skaters.order_by('id__team_name', 'id__name')
+    elif order_by=='name':
+        available_skaters = available_skaters.order_by('id__name', 'id__team_name')
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
 
 
@@ -238,6 +258,11 @@ def add_defencemen(request, team_id):
         return render(request, 'fantasy/display_message.html', {'message': 'You have reached the maximum ('+ str(max_players) +') allowable number of players for this league'})
     current_skaters = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     available_skaters = NhlSkaters.objects.filter(defencemen_flag=1).exclude(id__in=current_skaters)
+    order_by = request.GET.get('order_by', 'defaultOrderField')
+    if order_by=='team_name' or order_by=='defaultOrderField':
+        available_skaters = available_skaters.order_by('id__team_name', 'id__name')
+    elif order_by=='name':
+        available_skaters = available_skaters.order_by('id__name', 'id__team_name')
     return render(request, 'fantasy/add_skater.html', {'team': team, 'available_skaters': available_skaters})
 
 

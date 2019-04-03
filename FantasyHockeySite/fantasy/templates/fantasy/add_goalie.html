@@ -1,6 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+	<a href="{% url 'fantasy:select_action' team.id %}">Return to team edit</a>
+	<br><br>
     <table cellspacing="10">
         <style>
             table {
@@ -15,9 +17,10 @@
             }
         </style>
         <tr>
+			<th> </th>
             <th>Jersey Number</th>
-            <th>Team Name</th>
-            <th>Name</th>
+            <th><a href="?order_by=team_name">Team Name</a></th>
+            <th><a href="?order_by=name">Name</a></th>
             <th>Games Played</th>
             <th>Wins</th>
             <th>Losses</th>
@@ -28,7 +31,8 @@
         </tr>
         {% for item in available_goalies %}
         <tr>
-            <td><a href="{% url 'fantasy:add' team.id item.id.id %}">{{ item.id.jersey_number }}</a></td>
+            <td><a href="{% url 'fantasy:add' team.id item.id.id %}">  Add player  </a></td>
+            <td>{{ item.id.jersey_number }}</td>
             <td>{{ item.id.team_name.team_name }}</td>
             <td>{{ item.id.name }}</td>
             <td>{{ item.id.games_played }}</td>
