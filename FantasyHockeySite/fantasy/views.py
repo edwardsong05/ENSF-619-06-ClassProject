@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.db import connection
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 
 from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams, Participates
 
@@ -132,31 +133,36 @@ def create_team(request, league_name):
         min_goalies = league.minimum_number_of_goalies
         temp = NhlGoalies.objects.order_by('?')[:min_goalies]
         for item in temp:
-            GoalieTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            #GoalieTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            GoalieTeams.objects.create(playerid=item.id, team_id=ft)
 
         # populate with randomly selected defencemen
         min_def = league.minimum_number_of_defencemen
         temp = NhlSkaters.objects.filter(defencemen_flag=1).order_by('?')[:min_def]
         for item in temp:
-            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            #SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            SkaterTeams.objects.create(playerid=item.id, team_id=ft)
 
         # populate with randomly selected right wing
         min_right = league.minimum_number_of_right_wing
         temp = NhlSkaters.objects.filter(right_wing_flag=1).order_by('?')[:min_right]
         for item in temp:
-            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            #SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            SkaterTeams.objects.create(playerid=item.id, team_id=ft)
 
         # populate with randomly selected left wing
         min_left = league.minimum_number_of_left_wing
         temp = NhlSkaters.objects.filter(left_wing_flag=1).order_by('?')[:min_left]
         for item in temp:
-            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            #SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            SkaterTeams.objects.create(playerid=item.id, team_id=ft)
 
         # populate with randomly selected center
         min_cen = league.minimum_number_of_center
         temp = NhlSkaters.objects.filter(center_flag=1).order_by('?')[:min_cen]
         for item in temp:
-            SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            #SkaterTeams.objects.create(playerid=item.id, fantasy_league_name=league, team_id=ft)
+            SkaterTeams.objects.create(playerid=item.id, team_id=ft)
 
         return render(request, 'fantasy/display_message.html', {'message': 'Sucessfully created fantasy team \"' + n  + '\" with randomly selected players'})
     else:
@@ -171,7 +177,7 @@ def edit_fantasy_teams(request):
 
 
 def select_action(request, team_id):
-    team = FantasyTeam.objects.get(pk=team_id)
+    team = get_object_or_404(FantasyTeam, pk=team_id)
     return render(request, 'fantasy/select_action.html', {'team': team})
 
 
@@ -237,13 +243,19 @@ def add_defencemen(request, team_id):
 
 def add(request, team_id, nhl_id):
     team = get_object_or_404(FantasyTeam, pk=team_id)
+    # check if the player to add is already on the team
+    #if SkaterTeams.objects.filter()
+    # check if the player to add is a goalie
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
         goalie = get_object_or_404(NhlGoalies, pk=nhl_id)
-        GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        #GoalieTeams.objects.create(playerid=goalie.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        GoalieTeams.objects.create(playerid=goalie.id, team_id=team)
         return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully added to the team'})
+    # check if the player to add is a skater
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = get_object_or_404(NhlSkaters, pk=nhl_id)
-        SkaterTeams.objects.create(playerid=skater.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        #SkaterTeams.objects.create(playerid=skater.id, fantasy_league_name=team.fantasy_league_name, team_id=team)
+        SkaterTeams.objects.create(playerid=skater.id, team_id=team)
         return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully added to the team'})
     else:
         return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not added to the team'})
@@ -304,11 +316,11 @@ def remove(request, team_id, nhl_id):
     team = get_object_or_404(FantasyTeam, pk=team_id)
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
         goalie = get_object_or_404(NhlPlayers, pk=nhl_id)
-        GoalieTeams.objects.get(playerid=goalie, team_id=team).delete()
+        get_object_or_404(GoalieTeams, playerid=goalie, team_id=team).delete()
         return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully removed from the team'})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = get_object_or_404(NhlPlayers, pk=nhl_id)
-        SkaterTeams.objects.get(playerid=skater, team_id=team).delete()
+        get_object_or_404(SkaterTeams, playerid=skater, team_id=team).delete()
         return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully removed from the team'})
     else:
         return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not removed from the team'})
