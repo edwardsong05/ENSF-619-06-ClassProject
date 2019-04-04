@@ -1,20 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <h2>Teams In Fantasy League: {{ league.fantasy_league_name }}</h2>
-    <table cellspacing="10">
-        <style>
-            table {
-                border-collapse: collapse;
-                border: 1px solid black;
-            }
-            th, td {
-                border: 1px solid black;
-            }
-            tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-        </style>
+    <h3>Teams In Fantasy League: {{ league.fantasy_league_name }}</h3>
+    <table class="table">
         <tr>
             <th>Team Name</th>
             <th>User</th>
@@ -29,11 +17,11 @@
         {% endfor %}
     </table>
     <br>
-    <h2>Fantasy League Points Weight</h2>
-    <table>
+    <h3>Fantasy League Points Weight</h3>
+    <table class="table">
         <tr>
-            <th><h3>Weight</h3></th>
-            <th><h3>Value</h3></th>
+            <th><h4>Weight</h4></th>
+            <th><h4>Value</h4></th>
         </tr>
         <tr>
             <td>Goals Weight</td>
@@ -109,11 +97,11 @@
         </tr>
     </table>
     <br>
-    <h2>Team Composition</h2>
-    <table>
+    <h3>Team Composition</h3>
+    <table class="table">
         <tr>
-            <th><h3>Composition</h3></th>
-            <th><h3>Value</h3></th>
+            <th><h4>Composition</h4></th>
+            <th><h4>Value</h4></th>
         </tr>
         <tr>
             <td>Maximum Number of Players</td>

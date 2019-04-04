@@ -1,21 +1,11 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-	<a href="{% url 'fantasy:select_action' team.id %}">Return to team edit</a>
+    <h3>Add Goalie</h3>
+    <br>
+	<a href="{% url 'fantasy:select_action' team.id %}"><button type="button" class="btn btn-secondary">Return to team edit</button></a>
 	<br><br>
-    <table cellspacing="10">
-        <style>
-            table {
-                border-collapse: collapse;
-                border: 1px solid black;
-            }
-            th, td {
-                border: 1px solid black;
-            }
-            tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-        </style>
+    <table class="table">
         <tr>
 			<th> </th>
             <th>Jersey Number</th>

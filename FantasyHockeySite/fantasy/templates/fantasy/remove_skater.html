@@ -1,20 +1,12 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <table cellspacing="10">
-        <style>
-            table {
-                border-collapse: collapse;
-                border: 1px solid black;
-            }
-            th, td {
-                border: 1px solid black;
-            }
-            tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-        </style>
+    <h3>Remove Skater</h3>
+    <br>
+    <a href="{% url 'fantasy:select_action' team.id %}"><button type="button" class="btn btn-secondary">Return to team edit</button></a>
+    <table class="table">
         <tr>
+            <th>  </th>
             <th>Jersey Number</th>
             <th>Team Name</th>
             <th>Name</th>
@@ -32,7 +24,8 @@
         </tr>
         {% for item in skaters %}
         <tr>
-            <td><a href="{% url 'fantasy:remove' team.id item.id.id %}">{{ item.id.jersey_number }}</a></td>
+            <td><a href="{% url 'fantasy:remove' team.id item.id.id %}">Remove player</a></td>
+            <td>{{ item.id.jersey_number }}</td>
             <td>{{ item.id.team_name.team_name }}</td>
             <td>{{ item.id.name }}</td>
             <td>{{ item.id.games_played }}</td>

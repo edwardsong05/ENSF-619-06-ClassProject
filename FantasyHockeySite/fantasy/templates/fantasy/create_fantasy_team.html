@@ -1,6 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+    <h3>Create Fantasy Team</h3>
+    <br>
     <form action="{% url 'fantasy:create_team' league.fantasy_league_name %}" method="post">
         {% csrf_token %}
         Team Name:<br> <input type="text" name="name">

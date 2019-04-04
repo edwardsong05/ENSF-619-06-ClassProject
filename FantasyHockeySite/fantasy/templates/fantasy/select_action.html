@@ -1,15 +1,20 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <li><a href="{% url 'fantasy:add_goalie' team.id %}">Add Goalie</a></li>
-    <li><a href="{% url 'fantasy:remove_goalie' team.id %}">Remove Goalie</a></li>
-    <li><a href="{% url 'fantasy:add_center' team.id %}">Add Center</a></li>
-    <li><a href="{% url 'fantasy:remove_center' team.id %}">Remove Center</a></li>
-    <li><a href="{% url 'fantasy:add_left_wing' team.id %}">Add Left Wing</a></li>
-    <li><a href="{% url 'fantasy:remove_left_wing' team.id %}">Remove Left Wing</a></li>
-    <li><a href="{% url 'fantasy:add_right_wing' team.id %}">Add Right Wing</a></li>
-    <li><a href="{% url 'fantasy:remove_right_wing' team.id %}">Remove Right Wing</a></li>
-    <li><a href="{% url 'fantasy:add_defencemen' team.id %}">Add Defencemen</a></li>
-    <li><a href="{% url 'fantasy:remove_defencemen' team.id %}">Remove Defencemen</a></li>
-	<li><a href="{% url 'fantasy:view_fantasy_team_players' team.id %}">View Current Team</a></li>
+  <h3>Edit Team</h3>
+  <br>
+  <div class="list-group">
+    <a href="{% url 'fantasy:add_goalie' team.id %}" class="list-group-item list-group-item-action">Add Goalie</a>
+    <a href="{% url 'fantasy:remove_goalie' team.id %}" class="list-group-item list-group-item-action">Remove Goalie</a>
+    <a href="{% url 'fantasy:add_center' team.id %}" class="list-group-item list-group-item-action">Add Center</a>
+    <a href="{% url 'fantasy:remove_center' team.id %}" class="list-group-item list-group-item-action">Remove Center</a>
+    <a href="{% url 'fantasy:add_left_wing' team.id %}" class="list-group-item list-group-item-action">Add Left Wing</a>
+    <a href="{% url 'fantasy:remove_left_wing' team.id %}" class="list-group-item list-group-item-action">Remove Left Wing</a>
+    <a href="{% url 'fantasy:add_right_wing' team.id %}" class="list-group-item list-group-item-action">Add Right Wing</a>
+    <a href="{% url 'fantasy:remove_right_wing' team.id %}" class="list-group-item list-group-item-action">Remove Right Wing</a>
+    <a href="{% url 'fantasy:add_defencemen' team.id %}" class="list-group-item list-group-item-action">Add Defencemen</a>
+    <a href="{% url 'fantasy:remove_defencemen' team.id %}" class="list-group-item list-group-item-action">Remove Defencemen</a>
+    <a href="{% url 'fantasy:view_fantasy_team_players' team.id %}" class="list-group-item list-group-item-action">View Current Team</a>
+  </div>
 {% endblock %}
+

@@ -1,6 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+    <h3>Search NHL Players</h3>
+    <br>
     <form action="{% url 'fantasy:search_player' %}" method="post">
         {% csrf_token %}
         Team Name:<br> <input type="text" name="team_name">

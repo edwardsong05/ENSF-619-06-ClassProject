@@ -1,9 +1,11 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+    <h3>Edit League Rules</h3>
+    <br>
     <form action="{% url 'fantasy:update_rules' league.fantasy_league_name %}" method="post">
         {% csrf_token %}
-        <h2>Point Weights</h2>
+        <h4>Point Weights</h4>
         Only numbers with three digits will be accepted, a single decimal place is allowed.
         <br>
         <i>i.e. enter the following format: xx.x</i>
@@ -11,9 +13,9 @@
         <br>
         <table>
             <tr>
-                <th><h3>Weight</h3></th>
-                <th><h3>Current Value</h3></th>
-                <th><h3>Changed Value</h3></th>
+                <th><h4>Weight</h4></th>
+                <th><h4>Current Value</h4></th>
+                <th><h4>Changed Value</h4></th>
             </tr>
             <tr>
                 <td>Goals Weight</td>
@@ -107,15 +109,15 @@
             </tr>
         </table>
         <br>
-        <h2>Team Composition</h2>
+        <h4>Team Composition</h4>
         Only integer values will be accepted.
         <br>
         <br>
         <table>
             <tr>
-                <th><h3>Composition</h3></th>
-                <th><h3>Current Value</h3></th>
-                <th><h3>Changed Value</h3></th>
+                <th><h4>Composition</h4></th>
+                <th><h4>Current Value</h4></th>
+                <th><h4>Changed Value</h4></th>
             </tr>
             <tr>
                 <td>Maximum Number of Players</td>

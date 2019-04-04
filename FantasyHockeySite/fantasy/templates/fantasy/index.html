@@ -1,15 +1,20 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
-    <li><a href="{% url 'fantasy:nhl_players' %}">NHL Players</a></li>
-    <li><a href="{% url 'fantasy:nhl_teams' %}">NHL Teams</a></li>
-    <li><a href="{% url 'fantasy:search_nhl_player' %}">Search NHL Player</a></li>
-    <li><a href="{% url 'fantasy:create_fantasy_league' %}">Create Fantasy League</a></li>
-    <li><a href="{% url 'fantasy:edit_fantasy_league_rules' %}">Edit Fantasy League Rules</a></li>
-    <li><a href="{% url 'fantasy:view_fantasy_league_invite_code' %}">View Fantasy League Invite Code</a></li>
-    <li><a href="{% url 'fantasy:join_fantasy_league' %}">Join Fantasy League</a></li>
-    <li><a href="{% url 'fantasy:create_fantasy_team_show_leagues' %}">Create Fantasy Team</a></li>
-    <li><a href="{% url 'fantasy:edit_fantasy_teams' %}">Edit Fantasy Teams</a></li>
-    <li><a href="{% url 'fantasy:view_fantasy_teams' %}">View Fantasy Teams</a></li>
-    <li><a href="{% url 'fantasy:view_fantasy_leagues' %}">View Fantasy Leagues</a></li>
+    {% csrf_token %}
+    <h3>Homepage</h3>
+    <br>
+    <div class="list-group">
+      <a href="{% url 'fantasy:nhl_players' %}" class="list-group-item list-group-item-action">NHL Players</a>
+      <a href="{% url 'fantasy:nhl_teams' %}" class="list-group-item list-group-item-action">NHL Teams</a>
+      <a href="{% url 'fantasy:search_nhl_player' %}" class="list-group-item list-group-item-action">Search NHL Player</a>
+      <a href="{% url 'fantasy:create_fantasy_league' %}" class="list-group-item list-group-item-action">Create Fantasy League</a>
+      <a href="{% url 'fantasy:edit_fantasy_league_rules' %}" class="list-group-item list-group-item-action">Edit Fantasy League Rules</a>
+      <a href="{% url 'fantasy:view_fantasy_league_invite_code' %}" class="list-group-item list-group-item-action">View Fantasy League Invite Code</a>
+      <a href="{% url 'fantasy:join_fantasy_league' %}" class="list-group-item list-group-item-action">Join Fantasy League</a>
+      <a href="{% url 'fantasy:create_fantasy_team_show_leagues' %}" class="list-group-item list-group-item-action">Create Fantasy Team</a>
+      <a href="{% url 'fantasy:edit_fantasy_teams' %}" class="list-group-item list-group-item-action">Edit Fantasy Teams</a>
+      <a href="{% url 'fantasy:view_fantasy_teams' %}" class="list-group-item list-group-item-action">View Fantasy Teams</a>
+      <a href="{% url 'fantasy:view_fantasy_leagues' %}" class="list-group-item list-group-item-action">View Fantasy Leagues</a>
+    </div>
 {% endblock %}

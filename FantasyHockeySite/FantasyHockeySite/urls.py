@@ -21,6 +21,7 @@ from fantasy import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('home', views.index, name='home'),
     path('fantasy/', include('fantasy.urls', namespace='fantasy')),
     path('admin/', admin.site.urls),
     re_path('api/(?P<version>(v1|v2))/', include('apis.urls')),

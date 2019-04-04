@@ -1,6 +1,8 @@
 {% extends 'fantasy/base.html' %}
 
 {% block content %}
+    <h3>Join Fantasy League</h3>
+    <br>
     <form action="{% url 'fantasy:join_league' %}" method="post">
         {% csrf_token %}
         Invite Code:<br> <input type="text" name="code">
