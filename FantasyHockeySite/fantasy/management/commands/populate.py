@@ -4,15 +4,18 @@ from django.conf import settings
 import requests
 import pandas as pd
 import pymysql
+from fantasy.models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams, Participates
 
 import os
 import json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 class Command(BaseCommand):
     help = 'Updates models in the NHL Team table'
 
     def getRequest(self, url):
-        #randomise user agent to prevent rate limit
+        # randomise user agent to prevent rate limit
         while True:
             try:
                 ua = UserAgent()
@@ -20,7 +23,7 @@ class Command(BaseCommand):
                 r = requests.get(url, headers = header, timeout = 10)
                 break
             except Exception as e:
-                #sometimes it will timeout and raise exception
+                # sometimes it will timeout and raise exception
                 print(str(e))
         return r
 
@@ -58,8 +61,6 @@ class Command(BaseCommand):
         listGoalies = []
         listSkaters = []
 
-        #for i in range(10):
-            #team = teamsData['teams'][i]
         for team in teamsData['teams']:
             teamURL = team['link']
             r = self.getRequest(baseURL + teamURL + "?expand=team.stats")
@@ -92,7 +93,7 @@ class Command(BaseCommand):
                                             player['jerseyNumber'],
                                             player['position']['name']))
 
-        ##build dataframes for skaters and goalies
+        # build dataframes for skaters and goalies
         dfGoalies = pd.DataFrame(columns=['id','name', 'teamName', 'evenSaves',
                                         'evenShots','evenStrengthSavePercentage',
                                         'games','gamesStarted','goalAgainstAverage',
@@ -150,171 +151,125 @@ class Command(BaseCommand):
             dfSkaters = dfSkaters.append(tempDf, ignore_index=True, sort = False)
 
         # insert team data into the database
-        try:
-            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
-            for i in range(dfTeams.shape[0]):
-                print(dfTeams.loc[i,'teamName'])
-                sql = \
-                """INSERT INTO `nhl_team` (`team_name`, `goals_for`, `goals_against`, \
-                    `wins`, `losses`, `overtime_losses`) VALUES (%s, %s, %s, %s, %s, %s) \
-                    ON DUPLICATE KEY UPDATE \
-                    team_name=VALUES(team_name), \
-                    goals_for=VALUES(goals_for), \
-                    goals_against=VALUES(goals_against), \
-                    wins=VALUES(wins), \
-                    losses=VALUES(losses), \
-                    overtime_losses=VALUES(overtime_losses)"""
-                with connection.cursor() as cursor:
-                    goalsFor = int(round(dfTeams.loc[i,'gamesPlayed'] * dfTeams.loc[i,'goalsPerGame']))
-                    goalsAgainst = int(round(dfTeams.loc[i,'gamesPlayed'] * dfTeams.loc[i,'goalsAgainstPerGame']))
-                    cursor.execute(sql, (dfTeams.loc[i,'teamName'],
-                                        str(goalsFor),
-                                        str(goalsAgainst),
-                                        str(dfTeams.loc[i,'wins']),
-                                        str(dfTeams.loc[i,'losses']),
-                                        str(dfTeams.loc[i,'ot'])))
-                connection.commit()
-                print ("Record inserted successfully into nhl_team table")
-        except pymysql.Error as error:
-            code, message = error.args
-            print(">>>>>>>>>>>>>", code, message)
-        finally:
-            connection.close()
+        for i in range(dfTeams.shape[0]):
+            print(dfTeams.loc[i,'teamName'])
+            goalsFor = int(round(dfTeams.loc[i,'gamesPlayed'] * dfTeams.loc[i, 'goalsPerGame']))
+            goalsAgainst = int(round(dfTeams.loc[i,'gamesPlayed'] * dfTeams.loc[i, 'goalsAgainstPerGame']))
+
+            if NhlTeam.objects.filter(team_name=dfTeams.loc[i, 'teamName']).exists():
+                # update
+                team = NhlTeam.objects.get(pk=dfTeams.loc[i, 'teamName'])
+                team.goals_for = goalsFor
+                team.goals_against = goalsAgainst
+                team.wins = dfTeams.loc[i, 'wins']
+                team.losses = dfTeams.loc[i, 'losses']
+                team.overtime_losses = dfTeams.loc[i, 'ot']
+                team.save()
+            else:
+                # add to the db
+                NhlTeam.objects.create(team_name=dfTeams.loc[i, 'teamName'], goals_for=goalsFor,
+                    goals_against=goalsAgainst, wins=dfTeams.loc[i, 'wins'], losses=dfTeams.loc[i, 'losses'],
+                    overtime_losses=dfTeams.loc[i, 'ot'])
+
+            print("Record inserted successfully into nhl_team table")
 
         # insert goalie data into the database
-        try:
-            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
-            for i in range(dfGoalies.shape[0]):
-                print(dfGoalies.loc[i, 'name'])
-                sql = \
-                """INSERT INTO `nhl_players` (`id`, `jersey_number`, `team_name`, `name`, \
-                    `games_played`) VALUES (%s, %s, %s, %s, %s) \
-                    ON DUPLICATE KEY UPDATE \
-                    id = VALUES(id), \
-                    jersey_number=VALUES(jersey_number), \
-                    team_name=VALUES(team_name), \
-                    name=VALUES(name), \
-                    games_played=VALUES(games_played)"""
-                with connection.cursor() as cursor:
-                    cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
-                                        str(dfGoalies.loc[i, 'jerseyNumber']),
-                                        dfGoalies.loc[i, 'teamName'],
-                                        dfGoalies.loc[i, 'name'],
-                                        str(dfGoalies.loc[i, 'games'])))
-                connection.commit()
+        for i in range(dfGoalies.shape[0]):
+            print(dfGoalies.loc[i, 'name'])
 
-                sql = \
-                """INSERT INTO `nhl_goalies` (`id`, `wins`, `losses`, `overtime_losses`, `shots_against`, `saves`, \
-                    `shutouts`) VALUES (%s, %s, %s, %s, %s, %s, %s) \
-                    ON DUPLICATE KEY UPDATE \
-                    id = VALUES(id), \
-                    wins=VALUES(wins), \
-                    losses=VALUES(losses), \
-                    overtime_losses=VALUES(overtime_losses), \
-                    shots_against=VALUES(shots_against), \
-                    saves=VALUES(saves), \
-                    shutouts=VALUES(shutouts)"""
-                with connection.cursor() as cursor:
-                    cursor.execute(sql, (str(dfGoalies.loc[i, 'id']),
-                                        str(dfGoalies.loc[i, 'wins']),
-                                        str(dfGoalies.loc[i, 'losses']),
-                                        str(dfGoalies.loc[i, 'ot']),
-                                        str(dfGoalies.loc[i, 'shotsAgainst']),
-                                        str(dfGoalies.loc[i, 'saves']),
-                                        str(dfGoalies.loc[i, 'shutouts'])))
-                connection.commit()
-                print ("Record inserted successfully into nhl_goalies table")
-        except pymysql.Error as error:
-            code, message = error.args
-            print(">>>>>>>>>>>>>", code, message)
-        finally:
-            connection.close()
+            if NhlPlayers.objects.filter(id=dfGoalies.loc[i, 'id']).exists():
+                # update
+                print('this')
+                player = NhlPlayers.objects.get(pk=dfGoalies.loc[i, 'id'])
+                player.jersey_number = dfGoalies.loc[i, 'jerseyNumber']
+                player.name = dfGoalies.loc[i, 'name']
+                player.games_played = dfGoalies.loc[i, 'games']
+                player.save()
+
+                goalie = NhlGoalies.objects.get(pk=player)
+                goalie.wins = dfGoalies.loc[i, 'wins']
+                goalie.losses = dfGoalies.loc[i, 'losses']
+                goalie.overtime_losses = dfGoalies.loc[i, 'ot']
+                goalie.shots_against = dfGoalies.loc[i, 'shotsAgainst']
+                goalie.saves = dfGoalies.loc[i, 'saves']
+                goalie.shutouts = dfGoalies.loc[i, 'shutouts']
+                goalie.save()
+            else:
+                # add to the db
+                t = NhlTeam.objects.get(pk=dfGoalies.loc[i, 'teamName'])
+
+                player = NhlPlayers.objects.create(id=dfGoalies.loc[i, 'id'], team_name=t,
+                    jersey_number=dfGoalies.loc[i, 'jerseyNumber'], name=dfGoalies.loc[i, 'name'],
+                    games_played=dfGoalies.loc[i, 'games'])
+
+                NhlGoalies.objects.create(id=player, wins=dfGoalies.loc[i, 'wins'],
+                    losses=dfGoalies.loc[i, 'losses'], overtime_losses=dfGoalies.loc[i, 'ot'],
+                    shots_against=dfGoalies.loc[i, 'shotsAgainst'], saves=dfGoalies.loc[i, 'saves'],
+                    shutouts=dfGoalies.loc[i, 'shutouts'])
+
+            print("Record inserted successfully into nhl_goalies table")
 
         # insert skater data into the database
-        try:
-            connection = pymysql.connect(host=host_name, port=port_num, user=user_name, passwd=psw, db=db_name)
-            for i in range(dfSkaters.shape[0]):
-                print(dfSkaters.loc[i, 'name'])
-                sql = \
-                """INSERT INTO `nhl_players` (`id`, `jersey_number`, `team_name`, `name`, \
-                    `games_played`) VALUES (%s, %s, %s, %s, %s) \
-                    ON DUPLICATE KEY UPDATE \
-                    id = VALUES(id), \
-                    jersey_number=VALUES(jersey_number), \
-                    team_name=VALUES(team_name), \
-                    name=VALUES(name), \
-                    games_played=VALUES(games_played)"""
-                with connection.cursor() as cursor:
-                    cursor.execute(sql, (str(dfSkaters.loc[i, 'id']),
-                                        str(dfSkaters.loc[i, 'jerseyNumber']),
-                                        dfSkaters.loc[i, 'teamName'],
-                                        dfSkaters.loc[i, 'name'],
-                                        str(dfSkaters.loc[i, 'games'])))
-                connection.commit()
+        for i in range(dfSkaters.shape[0]):
+            print(dfSkaters.loc[i, 'name'])
 
-                sql = \
-                """INSERT INTO `nhl_skaters` (`id`, `goals`, `assists`, `powerplay_goals`, `powerplay_points`, `shorthanded_goals`, \
-                    `shorthanded_points`, `plus_minus`, `penalty_minutes`, `game_winning_goals`,
-                    `shots_on_goal`, `center_flag`, `left_wing_flag`, `right_wing_flag`, `defencemen_flag`) \
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
-                    ON DUPLICATE KEY UPDATE \
-                    id = VALUES(id), \
-                    goals=VALUES(goals), \
-                    assists=VALUES(assists), \
-                    powerplay_goals=VALUES(powerplay_goals), \
-                    powerplay_points=VALUES(powerplay_points), \
-                    shorthanded_goals=VALUES(shorthanded_goals), \
-                    shorthanded_points=VALUES(shorthanded_points), \
-                    plus_minus=VALUES(plus_minus), \
-                    penalty_minutes=VALUES(penalty_minutes), \
-                    game_winning_goals=VALUES(game_winning_goals), \
-                    shots_on_goal=VALUES(shots_on_goal), \
-                    center_flag=VALUES(center_flag), \
-                    left_wing_flag=VALUES(left_wing_flag), \
-                    right_wing_flag=VALUES(right_wing_flag), \
-                    defencemen_flag=VALUES(defencemen_flag)"""
-                with connection.cursor() as cursor:
-                    if 'Center' in dfSkaters.loc[i, 'position']:
-                        center = 1
-                        defence = 0
-                        left = 0
-                        right = 0
-                    elif 'Defense' in dfSkaters.loc[i, 'position']:
-                        center = 0
-                        defence = 1
-                        left = 0
-                        right = 0
-                    elif 'Left' in dfSkaters.loc[i, 'position']:
-                        center = 0
-                        defence = 0
-                        left = 1
-                        right = 0
-                    else:
-                        center = 0
-                        defence = 0
-                        left = 0
-                        right = 1
-                    cursor.execute(sql, (str(dfSkaters.loc[i, 'id']),
-                                        str(dfSkaters.loc[i, 'goals']),
-                                        str(dfSkaters.loc[i, 'assists']),
-                                        str(dfSkaters.loc[i, 'powerPlayGoals']),
-                                        str(dfSkaters.loc[i, 'powerPlayPoints']),
-                                        str(dfSkaters.loc[i, 'shortHandedGoals']),
-                                        str(dfSkaters.loc[i, 'shortHandedPoints']),
-                                        str(dfSkaters.loc[i, 'plusMinus']),
-                                        str(dfSkaters.loc[i, 'penaltyMinutes']),
-                                        str(dfSkaters.loc[i, 'gameWinningGoals']),
-                                        str(dfSkaters.loc[i, 'shots']),
-                                        str(center),
-                                        str(defence),
-                                        str(left),
-                                        str(right)))
-                connection.commit()
-                print ("Record inserted successfully into nhl_skaters table")
-        except pymysql.Error as error:
-            code, message = error.args
-            print(">>>>>>>>>>>>>", code, message)
-        finally:
-            connection.close()
+            if 'Center' in dfSkaters.loc[i, 'position']:
+                center = 1
+                defence = 0
+                left = 0
+                right = 0
+            elif 'Defense' in dfSkaters.loc[i, 'position']:
+                center = 0
+                defence = 1
+                left = 0
+                right = 0
+            elif 'Left' in dfSkaters.loc[i, 'position']:
+                center = 0
+                defence = 0
+                left = 1
+                right = 0
+            else:
+                center = 0
+                defence = 0
+                left = 0
+                right = 1
 
-# Center, Defensemen, Left Wing, Right Wing
+            if NhlPlayers.objects.filter(id=dfSkaters.loc[i, 'id']).exists():
+                # update
+                player = NhlPlayers.objects.get(pk=dfSkaters.loc[i, 'id'])
+                player.jersey_number = dfSkaters.loc[i, 'jerseyNumber']
+                player.name = dfSkaters.loc[i, 'name']
+                player.games_played = dfSkaters.loc[i, 'games']
+                player.save()
+
+                skater = NhlSkaters.objects.get(pk=player)
+                skater.goals = dfSkaters.loc[i, 'goals']
+                skater.assists = dfSkaters.loc[i, 'assists']
+                skater.powerplay_goals = dfSkaters.loc[i, 'powerPlayGoals']
+                skater.shorthanded_goals = dfSkaters.loc[i, 'shortHandedGoals']
+                skater.plus_minus = dfSkaters.loc[i, 'plusMinus']
+                skater.penalty_minutes = dfSkaters.loc[i, 'penaltyMinutes']
+                skater.game_winning_goals = dfSkaters.loc[i, 'gameWinningGoals']
+                skater.shots_on_goal = dfSkaters.loc[i, 'shots']
+                skater.center_flag = center
+                skater.left_wing_flag = left
+                skater.right_wing_flag = right
+                skater.defencemen_flag = defence
+                skater.save()
+            else:
+                # add to the db
+                t = NhlTeam.objects.get(pk=dfSkaters.loc[i, 'teamName'])
+
+                player = NhlPlayers.objects.create(id=dfSkaters.loc[i, 'id'], team_name=t,
+                    jersey_number=dfSkaters.loc[i, 'jerseyNumber'], name=dfSkaters.loc[i, 'name'],
+                    games_played=dfSkaters.loc[i, 'games'])
+
+                NhlSkaters.objects.create(id=player, goals=dfSkaters.loc[i, 'goals'],
+                    assists=dfSkaters.loc[i, 'assists'], powerplay_goals=dfSkaters.loc[i, 'powerPlayGoals'],
+                    shorthanded_goals=dfSkaters.loc[i, 'shortHandedGoals'],
+                    shorthanded_points=dfSkaters.loc[i, 'shortHandedPoints'], plus_minus=dfSkaters.loc[i, 'plusMinus'],
+                    penalty_minutes=dfSkaters.loc[i, 'penaltyMinutes'],
+                    game_winning_goals=dfSkaters.loc[i, 'gameWinningGoals'], shots_on_goal=dfSkaters.loc[i, 'shots'],
+                    center_flag=center, right_wing_flag=right, left_wing_flag=left, defencemen_flag=defence)
+
+            print("Record inserted successfully into nhl_skaters table")
