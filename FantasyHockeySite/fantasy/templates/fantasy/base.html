@@ -27,10 +27,20 @@
 				</div>
 				<div class="col-1"></div>
         </div>
-		{% else %}
-        <p>You are not logged in</p>
-        <a href="{% url 'login' %}">login</a> |
-        <a href="{% url 'signup' %}">signup</a>
+        {% else %}
+        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <h5 class="my-0 mr-md-auto font-weight-normal"><a href="{% url 'fantasy:index' %}">Fantasy Hockey Project</a></h5>
+        </div>
+        <div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+                    <p><h4>Welcome to the Fantasy Hockey Project</h4></p>
+                    <a href="{% url 'login' %}"><button type="button" class="btn btn-primary">Log In</button></a>
+                    <a href="{% url 'signup' %}"><button type="button" class="btn btn-secondary">Sign Up</button></a>
+				</div>
+				<div class="col-1"></div>
+        </div>
+        
     {% endif %}
 
 </body>

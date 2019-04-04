@@ -15,8 +15,8 @@ def index(request):
 
 
 def nhl_players(request):
-    skaters = NhlSkaters.objects.select_related('id').all()
-    goalies = NhlGoalies.objects.select_related('id').all()
+    skaters = NhlSkaters.objects.select_related('id').all().order_by('id__team_name', 'id__name')
+    goalies = NhlGoalies.objects.select_related('id').all().order_by('id__team_name', 'id__name')
     return render(request, 'fantasy/display_players.html', {'skaters': skaters, 'goalies': goalies})
 
 
@@ -414,7 +414,7 @@ def view_fantasy_leagues(request):
 
 def view_fantasy_league_teams(request, f_name):
     league = get_object_or_404(FantasyLeague, pk=f_name)
-    teams = FantasyTeam.objects.select_related('userid').filter(fantasy_league_name=f_name)
+    teams = FantasyTeam.objects.select_related('userid').filter(fantasy_league_name=f_name).order_by('-fantasy_points')
     return render(request, 'fantasy/view_fantasy_league_teams.html', {'teams': teams, 'league': league})
 
 
