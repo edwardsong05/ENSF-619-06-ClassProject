@@ -30,9 +30,9 @@ def search_nhl_player(request):
 
 
 def search_player(request):
-    tn = request.POST['team_name'].strip()
-    jn = request.POST['jersey_number'].strip()
-    n = request.POST['name'].strip()
+    tn = request.GET.get('team_name').strip()
+    jn = request.GET.get('jersey_number').strip()
+    n = request.GET.get('name').strip()
     if tn == '' and jn == '' and n == '':
         return render(request, 'fantasy/display_message.html', {'message': 'No parameters entered, search was not performed'})
     teams = NhlTeam.objects.filter(team_name__icontains=tn)
