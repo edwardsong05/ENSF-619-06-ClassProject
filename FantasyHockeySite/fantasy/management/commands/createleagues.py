@@ -9,9 +9,9 @@ import string
 
 class Command(BaseCommand):
     help = 'Creates random users, leagues, and teams'
-    numUsers = 20
+    numUsers = 10
     numLeagues = 10
-    numLeagueParticipants=10
+    numLeagueParticipants = 5
 
     def handle(self, *args, ** options):
         GoalieTeams.objects.all().delete()
@@ -110,6 +110,7 @@ class Command(BaseCommand):
                 break
             usernames.append(username)
             print("Added user:", username)
+        print('\n')
 
     def genRandomNum(self):
         return random.random()*2-1
@@ -182,7 +183,7 @@ class Command(BaseCommand):
                 league.save()
                 participate.save()
                 leaguenames.append(leaguename)
-                print("\nAdded league:", leaguename)
+                print("Added league:", leaguename, "with commissioner:", cusername)
 
                 #insert people into the league
                 leagueusernames = []
@@ -201,7 +202,6 @@ class Command(BaseCommand):
                                                           userid = puser)
                         participate.save()
                         leagueusernames.append(pusername)
-                        print("Added user:", pusername, "to league:", leaguename)
 
                         while True:
                             teamname = self.genFunName()
@@ -217,4 +217,5 @@ class Command(BaseCommand):
                             break
                         print("Added user:", pusername, "to league:", leaguename)
                         break
+                print()
                 break

@@ -5,8 +5,23 @@
 {% block content %}
 <h2>Sign up</h2>
 <form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Sign up</button>
+{% csrf_token %}
+{% for field in form %}
+    <div>
+      {{ field.label_tag }}<br>
+      {{ field }}
+      {% for error in field.errors %}
+        <p style="color: red">{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endfor %}
+<br>
+<p>
+  Your password can't be too similar to your other personal information.<br>
+  Your password must contain at least 8 characters.<br>
+  Your password can't be a commonly used password.<br>
+  Your password can't be entirely numeric.<br>
+</p>
+<button type="submit" class="btn btn-primary">Sign Up</button>
 </form>
 {% endblock %}

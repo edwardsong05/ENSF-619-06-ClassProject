@@ -3,10 +3,20 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
+<h3>Login</h3>
+<br>
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
+  {% for field in form %}
+     <div>
+       {{ field.label_tag }}<br>
+       {{ field }}
+       {% for error in field.errors %}
+         <p style="color: red">{{ error }}</p>
+       {% endfor %}
+     </div>
+   {% endfor %}
+   <br>
+  <button type="submit" class="btn btn-primary">Log In</button>
 </form>
 {% endblock %}
