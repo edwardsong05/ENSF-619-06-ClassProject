@@ -6,7 +6,7 @@
     <form action="{% url 'fantasy:join_league' %}" method="post">
         {% csrf_token %}
         Invite Code:<br> <input type="text" name="code">
-        <br>
-        <input type="submit" value="Submit">
+        <br><br>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 {% endblock %}

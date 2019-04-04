@@ -290,20 +290,20 @@ def add(request, team_id, nhl_id):
         # check if the goalie is already on the team
         if not GoalieTeams.objects.filter(playerid=goalie.id, team_id=team).exists():
             GoalieTeams.objects.create(playerid=goalie.id, team_id=team)
-            return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully added to the team'})
+            return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully added to the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
         else:
-            return render(request, 'fantasy/display_message.html', {'message': 'Goalie was already on the team, goalie was not inserted'})
+            return render(request, 'fantasy/display_message.html', {'message': 'Goalie was already on the team, goalie was not inserted', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     # check if the player to add is a skater
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = get_object_or_404(NhlSkaters, pk=nhl_id)
         # check if skater is already on the team
         if not SkaterTeams.objects.filter(playerid=skater.id, team_id=team).exists():
             SkaterTeams.objects.create(playerid=skater.id, team_id=team)
-            return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully added to the team'})
+            return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully added to the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
         else:
-            return render(request,'fantasy/display_message.html', {'message': 'Skater was already on the team, skater was not inserted'})
+            return render(request,'fantasy/display_message.html', {'message': 'Skater was already on the team, skater was not inserted', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     else:
-        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not added to the team'})
+        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not added to the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
 
 
 def remove_goalie(request, team_id):
@@ -314,7 +314,7 @@ def remove_goalie(request, team_id):
     min_goalies = team.fantasy_league_name.minimum_number_of_goalies
     count = GoalieTeams.objects.filter(team_id=team.id).count()
     if min_goalies >= count:
-        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_goalies) + ') allowable number of goalies for this league'})
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_goalies) + ') allowable number of goalies for this league', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     current_goalies = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
     goalies = NhlGoalies.objects.filter(id__in=current_goalies)
     return render(request, 'fantasy/remove_goalie.html', {'team': team, 'goalies': goalies})
@@ -329,7 +329,7 @@ def remove_center(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     centers = NhlSkaters.objects.filter(id__in=skaters, center_flag=1)
     if min_center >= centers.count():
-        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_center) + ') allowable number of centers for this league'})
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_center) + ') allowable number of centers for this league', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': centers})
 
 
@@ -342,7 +342,7 @@ def remove_left_wing(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     lefts = NhlSkaters.objects.filter(id__in=skaters, left_wing_flag=1)
     if min_left >= lefts.count():
-        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_left) + ') allowable number of left wings for this league'})
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_left) + ') allowable number of left wings for this league', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': lefts})
 
 
@@ -355,7 +355,7 @@ def remove_right_wing(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     rights = NhlSkaters.objects.filter(id__in=skaters, right_wing_flag=1)
     if min_right >= rights.count():
-        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_right) + ') allowable number of right wings for this league'})
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_right) + ') allowable number of right wings for this league', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': rights})
 
 
@@ -368,7 +368,7 @@ def remove_defencemen(request, team_id):
     skaters = SkaterTeams.objects.filter(team_id=team.id).values_list('playerid', flat=True)
     defences = NhlSkaters.objects.filter(id__in=skaters, defencemen_flag=1)
     if min_def >= defences.count():
-        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_def) + ') allowable number of defencemen for this league'})
+        return render(request, 'fantasy/display_message.html', {'message': 'You have reached the minimum (' + str(min_def) + ') allowable number of defencemen for this league', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     return render(request, 'fantasy/remove_skater.html', {'team': team, 'skaters': defences})
 
 
@@ -380,13 +380,13 @@ def remove(request, team_id, nhl_id):
     if NhlGoalies.objects.filter(pk=nhl_id).exists():
         goalie = get_object_or_404(NhlPlayers, pk=nhl_id)
         get_object_or_404(GoalieTeams, playerid=goalie, team_id=team).delete()
-        return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully removed from the team'})
+        return render(request, 'fantasy/display_message.html', {'message': 'Goalie was sucessfully removed from the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     elif NhlSkaters.objects.filter(pk=nhl_id).exists():
         skater = get_object_or_404(NhlPlayers, pk=nhl_id)
         get_object_or_404(SkaterTeams, playerid=skater, team_id=team).delete()
-        return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully removed from the team'})
+        return render(request, 'fantasy/display_message.html', {'message': 'Skater was sucessfully removed from the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
     else:
-        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not removed from the team'})
+        return render(request, 'fantasy/display_message.html', {'message': 'An error has occured: player was not removed from the team', 'returnToTeamEdit':True, 'team_id':str(team_id)})
 
 
 def view_fantasy_teams(request):

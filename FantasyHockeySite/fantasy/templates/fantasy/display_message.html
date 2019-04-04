@@ -4,4 +4,9 @@
     <h3>Message</h3>
     <br>
     {{ message }}
+    {% if returnToTeamEdit %}
+        <br>
+        <br>
+        <a href="{% url 'fantasy:select_action' team_id %}"><button type="button" class="btn btn-secondary">Return to Team Edit</button></a>
+    {% endif %}
 {% endblock %}
