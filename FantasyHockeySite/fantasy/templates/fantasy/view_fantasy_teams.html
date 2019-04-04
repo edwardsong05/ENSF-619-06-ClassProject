@@ -8,12 +8,40 @@
             <th>Team Name</th>
             <th>League Name</th>
             <th>Points</th>
+            <th>Goals</th>
+            <th>Assists</th>
+            <th>Powerplay Goals</th>
+            <th>Shorthanded Goals</th>
+            <th>+/-</th>
+            <th>Penalty Minutes</th>
+            <th>Game Winning Goals</th>
+            <th>Shots on Goal</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Overtime Losses</th>
+            <th>Shots Against</th>
+            <th>Saves</th>
+            <th>Shutouts</th>
         </tr>
         {% for item in teams %}
         <tr>
             <td><a href="{% url 'fantasy:view_fantasy_team_players' item.id %}">{{ item.fantasy_team_name }}</a></td>
             <td>{{ item.fantasy_league_name.fantasy_league_name }}</td>
             <td>{{ item.fantasy_points }}</td>
+            <td>{{ item.goals }}</td>
+            <td>{{ item.assists }}</td>
+            <td>{{ item.powerplay_goals }}</td>
+            <td>{{ item.shorthanded_goals }}</td>
+            <td>{{ item.plus_minus }}</td>
+            <td>{{ item.penalty_minutes }}</td>
+            <td>{{ item.game_winning_goals }}</td>
+            <td>{{ item.shots_on_goal }}</td>
+            <td>{{ item.wins }}</td>
+            <td>{{ item.losses }}</td>
+            <td>{{ item.overtime_losses }}</td>
+            <td>{{ item.shots_against }}</td>
+            <td>{{ item.saves }}</td>
+            <td>{{ item.shutouts }}</td>
         </tr>
         {% endfor %}
     </table>

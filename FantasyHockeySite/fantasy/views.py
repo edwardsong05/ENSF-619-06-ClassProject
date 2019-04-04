@@ -68,7 +68,7 @@ def create_league(request):
             commissioner = get_object_or_404(LeagueCommissioner, pk=u_id)
 
         league = FantasyLeague.objects.create(fantasy_league_name=n, fantasy_league_invite_code=c, commissionerid=commissioner)
-        return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league \"' + n + '\" was sucessfully created'})
+        return render(request, 'fantasy/display_message.html', {'message': 'Fantasy league \"' + n + '\" was sucessfully created, please edit the rules before inviting people to join the league'})
 
 
 def view_fantasy_league_invite_code(request):
@@ -393,6 +393,55 @@ def view_fantasy_teams(request):
     u_id = request.user.id
     u_id = get_object_or_404(get_user_model(), pk=u_id)
     teams = FantasyTeam.objects.filter(userid=u_id)
+
+    # derive the team stats for each fantasy team
+    for team in teams:
+        skater_ids = SkaterTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+        goalie_ids = GoalieTeams.objects.filter(team_id=team).values_list('playerid', flat=True)
+        skaters = NhlSkaters.objects.filter(id__in=skater_ids)
+        goalies = NhlGoalies.objects.filter(id__in=goalie_ids)
+
+        # skater variables
+        goals = assists = powerplay_goals = powerplay_points = shorthanded_goals = shorthanded_points = plus_minus = 0
+        penalty_minutes = game_winning_goals = shots_on_goal = 0
+        for skater in skaters:
+            goals += skater.goals
+            assists += skater.assists
+            powerplay_goals += skater.powerplay_goals
+            shorthanded_goals += skater.shorthanded_goals
+            shorthanded_points += skater.shorthanded_points
+            plus_minus += skater.plus_minus
+            penalty_minutes += skater.penalty_minutes
+            game_winning_goals += skater.game_winning_goals
+            shots_on_goal += skater.shots_on_goal
+
+        # goalie variables
+        wins = losses = overtime_losses = shots_against = saves = shutouts = 0
+        for goalie in goalies:
+            wins += goalie.wins
+            losses += goalie.losses
+            overtime_losses += goalie.overtime_losses
+            shots_against += goalie.shots_against
+            saves += goalie.saves
+            shutouts += goalie.shutouts
+
+        team.goals = goals
+        team.assists = assists
+        team.powerplay_goals = powerplay_goals
+        team.powerplay_points = powerplay_points
+        team.shorthanded_goals = shorthanded_goals
+        team.shorthanded_points = shorthanded_points
+        team.plus_minus = plus_minus
+        team.penalty_minutes = penalty_minutes
+        team.game_winning_goals = game_winning_goals
+        team.shots_on_goal = shots_on_goal
+        team.wins = wins
+        team.losses = losses
+        team.overtime_losses = overtime_losses
+        team.shots_against = shots_against
+        team.saves = saves
+        team.shutouts = shutouts
+
     return render(request, 'fantasy/view_fantasy_teams.html', {'teams': teams})
 
 
