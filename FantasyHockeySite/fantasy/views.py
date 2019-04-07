@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 
-from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams, Participates
+from .models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams
 
 
 # Create your views here.

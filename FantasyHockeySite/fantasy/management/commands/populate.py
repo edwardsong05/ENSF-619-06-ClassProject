@@ -3,8 +3,7 @@ from fake_useragent import UserAgent
 from django.conf import settings
 import requests
 import pandas as pd
-import pymysql
-from fantasy.models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies, FantasyLeague, LeagueCommissioner, Participates, FantasyTeam, GoalieTeams, SkaterTeams, Participates
+from fantasy.models import NhlPlayers, NhlTeam, NhlSkaters, NhlGoalies
 
 import os
 import json
