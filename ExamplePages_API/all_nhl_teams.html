@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="pull_data.js"></script>
+
+<head>
+  <title>API Example: All Leagues</title>
+</head>
+
+<body>
+  <h1>All Teams On The Site</h1>
+  <script>
+    var link = 'http://127.0.0.1:8000/api/v1/nhlteams/'
+    document.body.onload = function () {
+      buildHtmlTable('#myDataTable', link);
+    }
+  </script>
+  <table id="myDataTable" border="1">
+  </table>
+
+  <br>
+  Get players from a specific NHL Team (put in team name below):
+  <form action="specific_nhl_team.html" method="GET">
+    <input type="text" name="teamName" />
+    <input type="submit" value="Submit" />
+  </form>
+</body>
+
+</html>

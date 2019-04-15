@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="pull_data.js"></script>
+
+<head>
+  <title>API Example: Specific League</title>
+</head>
+
+<body>
+  
+  <script>
+    
+    var teamId = findGetParameter("teamId");
+    teamId = teamId.replace("+", " ");
+    document.write("<h1>Players in Team: " + teamId + "</h1>");
+    console.log(teamId);
+    var link = 'http://127.0.0.1:8000/api/v1/teams/' + teamId + '/'
+    document.body.onload = function () {
+      buildHtmlTable('#myDataTable', link);
+    }
+  </script>
+  <table id="myDataTable" border="1">
+  </table>
+
+  <br>
+</body>
+
+</html>
