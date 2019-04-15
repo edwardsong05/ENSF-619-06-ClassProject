@@ -16,7 +16,7 @@
     leagueName = leagueName.replace("+", " ");
     document.write("<h1>Teams in League: " + leagueName + "</h1>");
     console.log(leagueName);
-    
+
     var link = 'http://127.0.0.1:8000/api/v1/leagues/' + leagueName + '/'
     document.body.onload = function () {
       buildHtmlTable('#myDataTable', link);
